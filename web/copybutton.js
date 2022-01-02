@@ -1,0 +1,1 @@
+../js/copybutton.js
