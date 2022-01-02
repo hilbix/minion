@@ -1,0 +1,66 @@
+body,html		{ background:#000; color:#fff }
+a			{ color:#aaf; text-decoration:none }
+a:link, a:visited       { color:#4ff; text-decoration:none }
+a:hover			{ color:#ff0; text-decoration:underline }
+a:active		{ color:#f80 }
+
+table			{ border-collapse:collapse }
+tr:hover		{ background-color:#044 }
+td			{ vertical-align:top; border:1px solid blue; padding:1px 3px; }
+
+
+#err			{ position:fixed; right:0; top:0; background-color:#f00; color:#fff; opacity:0.5 }
+#err:hover		{ opacity:1; transform-origin:top right; transform:scale(5); z-index:999 }
+
+.resizer		{ display:flex; margin:0; padding:0; border:0; resize:both; overflow:hidden }
+.resizer > *		{ width:100%; height:100%; margin:0; padding:0; border:0 }
+
+.fr			{ float:right }
+.fl			{ float:left }
+.w288			{ width:288px }
+
+.tiny			{ font-size:x-small }
+.pre			{ white-space:pre }
+
+/* https://pixelbar.be/blog/css-profi-tip-tooltip-attributen/ */
+a.hint, a.hint:hover, a.hint:focus, a.hint:active, a.hint:visited		{ color:white }
+a.hint,
+a.ext			{ position:relative }
+
+a.ext:after		{ content:"External link" }
+a.hint:after		{ content:attr("data-hint") }
+
+a.hint:after, a.ext:after	{
+			position:absolute;
+			display:none;
+
+			white-space:nowrap;
+			text-align:center;
+			font-size:x-small;
+			padding:5px 15px;
+
+			left:calc(50% - 20px);
+			bottom:calc(100% + 20px);
+			background:#800;
+			border:3px solid #fb4;
+			border-radius:10px;
+			}
+a.hint:before, a.ext:before	{
+			position:absolute;
+			display:none;
+
+			content:"";
+			width:0;
+			height:0;
+
+			left:50%;
+			bottom:100%;
+			border-style:solid;
+			border-width:20px 5px 0 5px;
+			border-color:#fb4 transparent transparent transparent;
+			}
+a.hint:hover:before, a.hint:hover:after,
+a.hint:focus:before, a.hint:focus:after,
+a.ext:hover:before, a.ext:hover:after,
+a.ext:focus:before, a.ext:focus:after { display:inherit; color:#fff }
+
