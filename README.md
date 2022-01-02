@@ -1,6 +1,7 @@
 > This README is terribly incomplete, wrong and unordered.
 
-- https://github.com/hilbix/minion
+- Example: https://valentin.hilbig.de/minion/
+- Source: https://github.com/hilbix/minion
 
 # Web Minions
 
