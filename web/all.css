@@ -22,6 +22,8 @@ td			{ vertical-align:top; border:1px solid blue; padding:1px 3px; }
 .tiny			{ font-size:x-small }
 .pre			{ white-space:pre }
 
+.bgred			{ background-color:red }
+
 /* https://pixelbar.be/blog/css-profi-tip-tooltip-attributen/ */
 a.hint, a.hint:hover, a.hint:focus, a.hint:active, a.hint:visited		{ color:white }
 a.hint,
