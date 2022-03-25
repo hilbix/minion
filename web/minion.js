@@ -28,6 +28,7 @@ fetch('minion.txt ')
     e.text(' ]');
   })
 .catch(err => e.$text = `(ERROR: ${err})`)
+.finally(() => e.text(' ').A.href('https://github.com/hilbix/minion').text('Source on GitHub'));
 
 });
 
