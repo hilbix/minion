@@ -1,6 +1,6 @@
 'use strict';
 
-const TESTED='Chrome97';
+const TESTED='2022-03-25 Chrome99';
 
 class Main
   {
@@ -58,15 +58,16 @@ class Main
       e.clr();
       e.A.href('https://github.com/settings/tokens').text('GitHub PAT');
       e.text(': ');
-      const i = e.INPUT.attr({placeholder:'GitHub PAT', title:'GitHub PAT, no spaces'});
+      const i = e.INPUT.attr({placeholder:'GitHub PAT', title:'GitHub PAT, no spaces', value:this.token || ''});
       const b = e.BUTTON.text('store in localStorage').on('click', _ => { localStorage.setItem(this.tok, i.$value); this.expire(); this.run() });
       e.DIV.text("Notes:")
       const x=e.UL;
       x.LI.text('This tool accesses the GitHub API using ').A.href('https://cdn.skypack.dev/octokit').text('OctoCat').$$.text('.');
-      x.LI.text('It needs a PAT to access your repos.  Be sure to limit access rights of that PAT (read-only is enough for now).');
+      x.LI.text('It needs a PAT to access your repos.  Be sure to limit access rights of that PAT.');
+      x.LI.text('Scope "public_repo" under "repo" is needed to read the keys of your public repos.');
       x.LI.text('As GitHub limits the number of requests, the Browser\'s localStorage is used for caching.');
       x.LI.text('The cache is not refreshed automatically.  Clear the cache (with the "clear cache" button) if needed, else you might see stale data.');
-      e.DIV.text(`Last tested 2022-01-02 with ${TESTED}`);
+      e.DIV.text(`Last tested ${TESTED.split(' ').shift()} with ${TESTED.split(' ').pop()}`);
     }
   setup()
     {
@@ -169,7 +170,7 @@ class Main
        .TH.text('title').$$
        .TH.text('json');
       if (!repos)
-        return t.TR.TD.attr({colspan:5}).text('no data due to error');
+        return t.TR.TD.attr({colspan:5}).text('no data due to error reading /user/repos');
       for (const k of repos)
         {
           if (this.running !== running) return t.TR.TD.attr({colspan:5}).text('(stopped)');
@@ -208,7 +209,7 @@ class Main
        .TH.text('key-type').$$
        .TH.text('list of repositories');
       if (!repos)
-        return t.TR.TD.attr({colspan:5}).text('no data due to error');
+        return t.TR.TD.attr({colspan:5}).text('no data due to error reading /user/repos');
       const a = {};
       for (const k of repos)
         {
@@ -217,7 +218,7 @@ class Main
           const u = k.keys_url.split('{',1)[0];
           const d = await this.paginate(u);
           if (!d)
-            return t.TR.TD.attr({colspan:5}).text(`no data due to error: ${toJ(u)}`);
+            return t.TR.TD.attr({colspan:5}).text(`no data due to error reading ${toJ(u)}`).BR.$$.text('perhaps PAT is missing the needed scope, see "token"');
           for (const m of d)
             {
               const w = `${m.title} ${m.read_only ? '0' : '1'}${m.verified ? '0' : '1'}${m.key.split(' ',1)[0]}`;
