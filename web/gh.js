@@ -73,7 +73,7 @@ class Main
     {
       this.s	= {}
       const e	= this.main.clr().DIV;
-      this.s.e	= this.main.HR.$$.DIV;
+      this.s.e	= this.main.hr.DIV;
       this.gh	= new this.octokit({ auth:this.token });
       this.s.cnt= e.BUTTON.text('clear').on('click', _ => this.expire());
       this.storagevent();
@@ -218,7 +218,7 @@ class Main
           const u = k.keys_url.split('{',1)[0];
           const d = await this.paginate(u);
           if (!d)
-            return t.TR.TD.attr({colspan:5}).text(`no data due to error reading ${toJ(u)}`).BR.$$.text('perhaps PAT is missing the needed scope, see "token"');
+            return t.TR.TD.attr({colspan:5}).text(`no data due to error reading ${toJ(u)}`).br.text('perhaps PAT is missing the needed scope, see "token"');
           for (const m of d)
             {
               const w = `${m.title} ${m.read_only ? '0' : '1'}${m.verified ? '0' : '1'}${m.key.split(' ',1)[0]}`;
