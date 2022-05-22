@@ -10,7 +10,7 @@ class Select
     {
       for (const a in ArrayFlat(a))
         {
-	}
+        }
     }
   };
 
@@ -25,7 +25,7 @@ class Main
     {
       this.err	= E('err');
       this.main	= E('main').clr();
-      const s = Select(this.main.SELECT).
+//      const s = new Select(this.main.SELECT).
       this.main.BUTTON.text('play').on('click', () => this.start());
       this.main.BUTTON.text('stop').on('click', () => this.stop());
       this.base	= this.main.SPAN;
