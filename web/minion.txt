@@ -1,3 +1,5 @@
 store
 clip
 gh
+sound
+hit
