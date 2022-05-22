@@ -4,13 +4,16 @@
 
 (_=>_())(()=>{
 
-const e = E.DIV.text('(menu loading)');
-E(document.currentScript).after(e);
+const m = E.DIV;
+E(document.currentScript).after(m);
+m.SPAN.text('[ ').A.href('/').text('Home').$$.text(' ] ');
+const e = m.SPAN.text('(menu loading)');
 
-fetch('minion.txt ')
-.then(_ => { if (_.ok) return _.text(); throw `fetch failed: ${_.status} ${_.url}` })
-.then(menu =>
+async function menu(cache)
   {
+    const _ = await fetch('minion.txt', {cache});
+    if (!_.ok) throw `fetch(${cache}) failed: ${_.status} ${_.url}`;
+    const menu = await _.text();
     console.log(menu);
     e.clr();
     let f = '[ ';
@@ -26,9 +29,16 @@ fetch('minion.txt ')
           f = ' | ';
         }
     e.text(' ]');
-  })
-.catch(err => e.$text = `(ERROR: ${err})`)
-.finally(() => e.text(' ').A.href('https://github.com/hilbix/minion').text('Source on GitHub'));
+  }
+let errs=0;
+function err(_)
+  {
+    e.clr().SPAN.text(`(ERROR #${++errs}) ${_}`).on('click', ()=>menu('reload').catch(err))
+  }
 
+menu('force-cache')
+.then(() => menu('no-cache'))
+.catch(err)
+.finally(() => m.text(' ').A.href('https://github.com/hilbix/minion').text('Source on GitHub'))
 });
 
