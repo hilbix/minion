@@ -3,3 +3,5 @@ clip
 gh
 sound
 hit
+broadcast
+regex
