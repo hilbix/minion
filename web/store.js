@@ -33,7 +33,16 @@ class Main
       const r = {s,t:t.TBODY,n,k,v};
       b.BUTTON.text('-').on('click', _ => { this.del(r); return 1 });
       b.BUTTON.text('+').on('click', _ => { s.setItem(k.$value, v.$value); this.show(r); return 1 });
+      b.BUTTON.text('*').on('click', _ => { this.select(r,k) });
       return r;
+    }
+  select(w)
+    {
+      for (let r=w.t.FIRST; r; r=r.NEXT)
+        {
+          if (r.FIRST.FIRST.$checked) continue;
+
+        }
     }
   del(w)
     {
@@ -41,7 +50,7 @@ class Main
         {
           if (!r.FIRST.FIRST.$checked) continue;
           const k = r.FIRST.NEXT.FIRST.NEXT.$text;
-          CONSOLE('del', k); 
+          CONSOLE('del', k);
           w.s.removeItem(k);
         }
       this.show(w);
@@ -55,6 +64,7 @@ class Main
   show(w)
     {
       const copy = (e,_) => copyButton(e,_).SPAN.text(_);
+      const iter = Object.getOwnPropertyNames(w.s).sort();
 
       w.n.$text = `${w.s.length} entries`;
       const t	= w.t.clr();
