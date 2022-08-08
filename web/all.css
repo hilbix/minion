@@ -8,7 +8,6 @@ table			{ border-collapse:collapse }
 tr:hover		{ background-color:#044 }
 td			{ vertical-align:top; border:1px solid blue; padding:1px 3px; }
 
-
 #err			{ position:fixed; right:0; top:0; background-color:#f00; color:#fff; opacity:0.5 }
 #err:hover		{ opacity:1; transform-origin:top right; transform:scale(5); z-index:999 }
 
@@ -65,4 +64,22 @@ a.hint:hover:before, a.hint:hover:after,
 a.hint:focus:before, a.hint:focus:after,
 a.ext:hover:before, a.ext:hover:after,
 a.ext:focus:before, a.ext:focus:after { display:inherit; color:#fff }
+
+.w98vw			{ width:98vw }
+input			{ background:#004; color:white; border:1px solid #880 }
+input:hover		{ background:#008 }
+textarea		{ background:#004; color:white; border:1px solid #880 }
+textarea:hover		{ background:#008 }
+button			{ background:#040; color:white; border:2px solid #880 }
+button:hover		{ background:#080 }
+
+/* That's the only way I can see it clearly	*/
+.lab				{ }
+.lab label			{ display:inline-block; background-color:#000; padding:1px 3px; border:2px solid #f0f; border-radius:2px; user-select:none }
+.lab label:hover		{ background-color:#500 }
+.lab input			{ display:none; position:absolute; left:0; top:0; width:0; height:0 }
+.lab input:focus + label	{ border-style:dashed }
+.lab input:checked + label	{ backgrond-color:#080; border-color:#ff0 }
+.lab input[type="checkbox"]         + label::after	{ content:" \2717 "; color:red; font-family:monospace; line-height:1 }
+.lab input[type="checkbox"]:checked + label::after	{ content:" \2713 "; color:#88f; }
 
