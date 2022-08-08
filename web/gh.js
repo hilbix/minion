@@ -4,8 +4,9 @@ const TESTED='2022-03-25 Chrome99';
 
 class Main
   {
-  constructor()
+  constructor(cache_prefix)
     {
+      this.cache_prefix = cache_prefix || 'gh-cache-';
       this.err	= E('err');
       this.main	= E('main').clr();
       this.tok	= 'github-token';
@@ -44,7 +45,7 @@ class Main
   async run()
     {
       if (!window.octokit)
-        return this.main.text(`Cannot access JavaScript on CDN`); 
+        return this.main.text(`Cannot access JavaScript on CDN`);
       this.octokit = window.octokit.Octokit;
       this.octoapp = window.octokit.App;
       this.token = await localStorage.getItem(this.tok);
@@ -56,7 +57,7 @@ class Main
   fn_token(e)
     {
       e.clr();
-      e.A.href('https://github.com/settings/tokens').text('GitHub PAT');
+      e.A.href('https://github.com/settings/tokens').target().text('GitHub PAT');
       e.text(': ');
       const i = e.INPUT.attr({placeholder:'GitHub PAT', title:'GitHub PAT, no spaces', value:this.token || ''});
       const b = e.BUTTON.text('store in localStorage').on('click', _ => { localStorage.setItem(this.tok, i.$value); this.expire(); this.run() });
@@ -99,7 +100,7 @@ class Main
     }
   async cache(name, req)
     {
-      const tag = `cache-${name}`;
+      const tag = `${this.cache_prefix}${name}`;
       const was = await localStorage.getItem(tag);
       if (was)
         {
@@ -123,8 +124,8 @@ class Main
     }
   expire()
     {
-      for (const k of Object.getOwnPropertyNames(localStorage))
-        if (k.startsWith('cache-'))
+      for (const k of Object.keys(localStorage))
+        if (k.startsWith(this.cache_prefix))
           localStorage.removeItem(k);
       this.storagevent();
     }
@@ -151,11 +152,11 @@ class Main
   async fn_cache(e)
     {
       const t = e.clr().TABLE;
-      for (const k of Object.getOwnPropertyNames(localStorage))
+      for (const k of Object.getOwnPropertyNames(localStorage).sort())
         {
           const r = t.TR;
           this.td(r, k);
-          this.td(r, localStorage[k]);
+          this.td(r, localStorage.getItem(k));
         }
       e.DIV.text('Note: This shows the cached entries for this site.  All data is stored locally in your browser.  Some entries may be from other pages on this site.');
     }
