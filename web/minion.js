@@ -39,6 +39,6 @@ function err(_)
 menu('force-cache')
 .then(() => menu('no-cache'))
 .catch(err)
-.finally(() => m.text(' ').A.href('https://github.com/hilbix/minion').text('Source on GitHub'))
+.finally(() => m.text(' ').A.href('https://github.com/hilbix/minion/tree/master/web').text('Source on GitHub'))
 });
 
