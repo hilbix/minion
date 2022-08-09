@@ -124,7 +124,7 @@ class Main
 
       const	[ok,res] = this.getmatch(regex, text, flags);
       t.add(res);
-      t.TR.TD.text('better match search').attr({colspan:2});
+      t.TR.TD.text('(partial match search follows)').attr({colspan:2});
       while (ok ? positive() : negative())
         console.log('loop', {regex, text, flags});
       
