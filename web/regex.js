@@ -5,6 +5,7 @@ class Main
   constructor()
     {
       this.main	= E('main').clr();
+      E('right').center();
       this.cnt=0;
     }
 
@@ -54,17 +55,20 @@ class Main
 
       for (const x in all)
         {
+	  const e = E(x);
+	  const n = all[x];
+          for (const t of evt[n])
+	    {
+	      console.log('on', x, t);
+              e.on(t, _ => { match() });	// .on('a b') must be made possible in future!
+	    }
+
           let v = sessionStorage.getItem(x);
 	  if (v === null) continue;
 
-	  const e = E(x);
-	  const n = all[x];
 	  if (n === 1 && getter[n](e) != '') continue;
 	  
 	  setter[n](x, JSON.parse(v));
-
-          for (const t of evt[n])
-            e.on(t, match);	// .on('a b') must be made possible in future!
 	}
 
       match();
