@@ -183,12 +183,17 @@ class Main
         return [text === '' ? true : false, r.TR.TD.text('empty match').attr({colspan:2}).$$];
 
       for (let a=0; a<ret.length; a++)
-        r.TR.td(`${a}`).td(this.abbrev(ret[a]));
+        r.TR.td(`${a}`).td(this.cp(ret[a]));
       if (ret.groups)
         for (const a in ret.groups)
-          r.TR.td(a).td(abbrev(this.ret.groups[a]));
+          r.TR.td(a).td(this.cp(this.ret.groups[a]));
 
       return [true, r];
+    }
+  cp(o)
+    {
+      const s = this.abbrev(o);
+      return [copyButton(E.SPAN,s), s];
     }
   abbrev(o)
     {
