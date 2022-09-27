@@ -15,15 +15,18 @@ class Main
         [ _ => void 0
         , _ => _.$value
         , _ => _.$checked
+        , _ => _.$checked
         ];
       const setter =
         [ ()    => void 0
         , (_,v) => E(_).$value = v
         , (_,v) => E(_).$checked = v
+        , (_,v) => E(_).$checked = v
         ];
       const evt =
         [ ['click']
         , ['change','keyup']
+        , ['change']
         , ['change']
         ];
       const all =
@@ -37,10 +40,11 @@ class Main
         , m: 2
         , s: 2
         , u: 2
+	, full: 3
         };
 
       // this is too complex.  We need .keep('name', provider, ..) for this, where session is default provider
-      const store = () => { for (const e in all) { const g = getter[all[e]](E(e)); if (g !== void 0) sessionStorage.setItem(e, JSON.stringify(g)) } };
+      const store = () => { for (const e in all) { const g = getter[all[e]](E(e)); if (g !== void 0) sessionStorage.setItem(e, toJ(g)) } };
       const match = once_per_cycle(() =>
         {
           E('cnt').$text = ++this.cnt;
@@ -53,6 +57,7 @@ class Main
           this.match(E('regex').$value, E('text').$value, flags);
         });
 
+      const val=[];
       for (const x in all)
         {
           const e = E(x);
@@ -60,7 +65,7 @@ class Main
           for (const t of evt[n])
             {
               console.log('on', x, t);
-              e.on(t, _ => { match() });	// .on('a b') must be made possible in future!
+              e.on(t, _ => { const v=getter[n](e); if (val[x]!==v || !n) match(); val[x]=v });	// .on('a b') must be made possible in future!
             }
 
           let v = sessionStorage.getItem(x);
@@ -76,6 +81,12 @@ class Main
 
   match(regex, text, flags)
     {
+      let round = 0;
+      const rrr = E('round').clr().text('0');
+
+      const sem = {};
+      this._sem = sem;
+
       const t = this.main.clr().TABLE;
 
       const positive = () =>
@@ -114,7 +125,7 @@ class Main
           if (ret)
             t.TR.td('remains').td(regex);
           return ret;
-}
+        }
 
       if (flags.startsWith('a'))
         {
@@ -122,11 +133,32 @@ class Main
           regex = `^${regex}$`;
         }
 
+      console.log('matching', {regex,text,flags});
+
+      rrr.$text = '(full match)';
+
       const	[ok,res] = this.getmatch(regex, text, flags);
       t.add(res);
-      t.TR.TD.text('(partial match search follows)').attr({colspan:2});
-      while (ok ? positive() : negative())
-        console.log('loop', {regex, text, flags});
+
+      const part = t.TR.TD.text('(partial match search follows)').attr({colspan:2});
+      const search = () =>
+        {
+          if (this._sem !== sem) return;
+          if (ok ? positive() : negative())
+            {
+              console.log('loop', {regex, text, flags});
+              rrr.$text = `(${++round})`;
+              setTimeout(search);
+            }
+	  else
+	    {
+              part.text('(done)');
+              rrr.$text = `(${round} rounds)`;
+	    }
+        }
+
+      rrr.$text = '(partial match)';
+      setTimeout(search);
 
 //      t.TR.TD.text('remaining bits').attr({colspan:2});
 //      t.TR.td('regex').td(regex);
@@ -151,12 +183,25 @@ class Main
         return [text === '' ? true : false, r.TR.TD.text('empty match').attr({colspan:2}).$$];
 
       for (let a=0; a<ret.length; a++)
-        r.TR.td(`${a}`).td(JSON.stringify(ret[a]));
+        r.TR.td(`${a}`).td(this.abbrev(ret[a]));
       if (ret.groups)
         for (const a in ret.groups)
-          r.TR.td(a).td(JSON.stringify(ret.groups[a]));
+          r.TR.td(a).td(abbrev(this.ret.groups[a]));
 
       return [true, r];
+    }
+  abbrev(o)
+    {
+      const n = 200;
+      const s = toJ(o);
+      if (E('full').$checked)
+        return s;
+      if (s.length>n)
+        {
+	  const n2 = (n/2)|0;
+	  return [ s.substr(0,n2), E.BUTTON.text('...'), s.substr(s.length-n2) ];
+	}
+      return s;
     }
   };
 
