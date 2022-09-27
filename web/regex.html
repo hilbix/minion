@@ -11,7 +11,9 @@
 <div id="right">Debug JavaScript RegExp against strings.  Runs entirely in your browser.</div>
 <div><input id="regex" type="text" class="w98vw" placeholder="RegEx without /../"/></div>
 <div><textarea id="text" rows="6" class="w98vw" placeholder="text to match"></textarea></div>
-<div class="lab"><button id="match">match</button>
+<div class="lab">
+<button id="match">match</button>
+|
 <input type="checkbox" id="a"/><label for="a">^anchored$ (need full match)</label>
 <input type="checkbox" id="d"/><label for="d">generate indices</label>
 <input type="checkbox" id="g"/><label for="g">global search</label>
@@ -19,6 +21,17 @@
 <input type="checkbox" id="m"/><label for="m">multiline search</label>
 <input type="checkbox" id="s"/><label for="s">. matches NL</label>
 <input type="checkbox" id="u"/><label for="u">Unicode</label>
+|
+HTML:
+<button id="HE">en</button>
+<button id="decodeHTML">de</button>
+URI:
+<button id="encodeURIComponent">en</button>
+<button id="decodeURIComponent">de</button>
+JSON:
+<button id="toJ">en</button>
+<button id="fromJ">de</button>
+|
 <input type="checkbox" id="full"/><label for="full">show strings in full</label>
 </div>
 <hr/>
