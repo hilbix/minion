@@ -25,6 +25,7 @@ class Main
         ];
       const evt =
         [ ['click']
+        , ['click']
         , ['change','keyup']
         , ['change']
         , ['change']
@@ -32,7 +33,7 @@ class Main
       const all =
         { regex: 1
         , text: 1
-        , match: 0
+	, match: 0
         , a: 2
         , d: 2
         , g: 2
@@ -42,6 +43,17 @@ class Main
         , u: 2
 	, full: 3
         };
+      const call =
+        [ _ => { const a=act[_]; if (a) { const e=E('text'); e.$value = a(e.$value); match() }}
+	];
+      const act =
+        { fromJ
+	, toJ
+	, encodeURIComponent
+	, decodeURIComponent
+	, HE
+	, decodeHTML
+	};
 
       // this is too complex.  We need .keep('name', provider, ..) for this, where session is default provider
       const store = () => { for (const e in all) { const g = getter[all[e]](E(e)); if (g !== void 0) sessionStorage.setItem(e, toJ(g)) } };
@@ -51,21 +63,34 @@ class Main
           store();
           let flags	= '';
           for (const a in all)
-            if (all[a]==2 && E(a).$checked)
+            if (all[a]==2 && E(a).$checked)	// I am not happy with this
               flags += a;
 
           this.match(E('regex').$value, E('text').$value, flags);
         });
 
       const val=[];
-      for (const x in all)
+      for (const x in Object.assign({},all,act))
         {
           const e = E(x);
-          const n = all[x];
+          const n = all[x]|0;
+	  const g = getter[n];
+	  const c = call[n];
           for (const t of evt[n])
             {
               console.log('on', x, t);
-              e.on(t, _ => { const v=getter[n](e); if (val[x]!==v || !n) match(); val[x]=v });	// .on('a b') must be made possible in future!
+              e.on(t, _ =>	// .on('a b') must be made possible in future!
+	        {
+		  if (c)
+		    {
+		      console.log(_);
+		      return c(x);
+		    }
+		  const v=g(e);
+		  if (val[x]!==v)
+		    match();
+		  val[x]=v
+	        });
             }
 
           let v = sessionStorage.getItem(x);
@@ -91,11 +116,16 @@ class Main
 
       const positive = () =>
         {
+	  // XXX TODO XXX look for more matches?
           console.log('positive');
         }
       const negative = () =>
         {
           let ret = false;
+	  // XXX TODO XXX this loop may take too long and make the browser unresponsive
+	  // Options:
+	  // setTimeout here, too
+	  // Worker
           for (let i=regex.length; --i>0; )
             {
               const part = regex.substring(0,i);
@@ -137,8 +167,8 @@ class Main
 
       rrr.$text = '(full match)';
 
-      const	[ok,res] = this.getmatch(regex, text, flags);
-      t.add(res);
+      const	[ok,res,detail] = this.getmatch(regex, text, flags);
+      t.add(ok ? res : detail ? E.TR.td(`${res}`).td(`${detail}`) : (E.TR.TD.text(`${res}`).attr({colspan:2}).$$));
 
       const part = t.TR.TD.text('(partial match search follows)').attr({colspan:2});
       const search = () =>
@@ -148,11 +178,11 @@ class Main
             {
               console.log('loop', {regex, text, flags});
               rrr.$text = `(${++round})`;
-              setTimeout(search);
+              setTimeout(search,100);
             }
 	  else
 	    {
-              part.text('(done)');
+              part.$text = '(done)';
               rrr.$text = `(${round} rounds)`;
 	    }
         }
@@ -166,7 +196,6 @@ class Main
    }
   getmatch(regex, text, flags)
     {
-      const r = E();
       let ret;
 
 //      console.log('try', {regex,text,flags});
@@ -174,14 +203,15 @@ class Main
         const reg = new RegExp(regex, flags);
         ret = reg.exec(text);
       } catch (e) {
-        return [false,r.TR.td('error:').td(`${e}`)];
+        return [false,'error',e];
       }
 
       if (ret === null)
-        return [text === '' ? true : false, r.TR.TD.text('no match').attr({colspan:2}).$$];
+        return [text === '' ? true : false, 'no match'];
       if (ret.length === 0)
-        return [text === '' ? true : false, r.TR.TD.text('empty match').attr({colspan:2}).$$];
+        return [text === '' ? true : false, 'empty match'];
 
+      const r = E();
       for (let a=0; a<ret.length; a++)
         r.TR.td(`${a}`).td(this.cp(ret[a]));
       if (ret.groups)
@@ -199,7 +229,7 @@ class Main
     {
       const n = 200;
       const s = toJ(o);
-      if (E('full').$checked)
+      if (!o || E('full').$checked)
         return s;
       if (s.length>n)
         {
