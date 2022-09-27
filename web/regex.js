@@ -67,7 +67,7 @@ class Main
           if (v === null) continue;
 
           if (n === 1 && getter[n](e) != '') continue;
-          
+
           setter[n](x, JSON.parse(v));
         }
 
@@ -127,7 +127,7 @@ class Main
       t.TR.TD.text('(partial match search follows)').attr({colspan:2});
       while (ok ? positive() : negative())
         console.log('loop', {regex, text, flags});
-      
+
 //      t.TR.TD.text('remaining bits').attr({colspan:2});
 //      t.TR.td('regex').td(regex);
 //      t.TR.td('text').td(toJ(text));
