@@ -13,24 +13,24 @@ class Main
     {
       const getter = 
         [ _ => void 0
-	, _ => _.$value
-	, _ => _.$checked
-	];
+        , _ => _.$value
+        , _ => _.$checked
+        ];
       const setter =
         [ ()    => void 0
-	, (_,v) => E(_).$value = v
-	, (_,v) => E(_).$checked = v
-	];
+        , (_,v) => E(_).$value = v
+        , (_,v) => E(_).$checked = v
+        ];
       const evt =
         [ ['click']
-	, ['change','keyup']
-	, ['change']
-	];
+        , ['change','keyup']
+        , ['change']
+        ];
       const all =
         { regex: 1
         , text: 1
-	, match: 0
-	, a: 2
+        , match: 0
+        , a: 2
         , d: 2
         , g: 2
         , i: 2
@@ -43,33 +43,33 @@ class Main
       const store = () => { for (const e in all) { const g = getter[all[e]](E(e)); if (g !== void 0) sessionStorage.setItem(e, JSON.stringify(g)) } };
       const match = once_per_cycle(() =>
         {
-	  E('cnt').$text = ++this.cnt;
-	  store();
-	  let flags	= '';
-	  for (const a in all)
-	    if (all[a]==2 && E(a).$checked)
-	      flags += a;
+          E('cnt').$text = ++this.cnt;
+          store();
+          let flags	= '';
+          for (const a in all)
+            if (all[a]==2 && E(a).$checked)
+              flags += a;
 
-	  this.match(E('regex').$value, E('text').$value, flags);
-	});
+          this.match(E('regex').$value, E('text').$value, flags);
+        });
 
       for (const x in all)
         {
-	  const e = E(x);
-	  const n = all[x];
+          const e = E(x);
+          const n = all[x];
           for (const t of evt[n])
-	    {
-	      console.log('on', x, t);
+            {
+              console.log('on', x, t);
               e.on(t, _ => { match() });	// .on('a b') must be made possible in future!
-	    }
+            }
 
           let v = sessionStorage.getItem(x);
-	  if (v === null) continue;
+          if (v === null) continue;
 
-	  if (n === 1 && getter[n](e) != '') continue;
-	  
-	  setter[n](x, JSON.parse(v));
-	}
+          if (n === 1 && getter[n](e) != '') continue;
+          
+          setter[n](x, JSON.parse(v));
+        }
 
       match();
     }
@@ -80,41 +80,41 @@ class Main
 
       const positive = () =>
         {
-	  console.log('positive');
-	}
+          console.log('positive');
+        }
       const negative = () =>
         {
-	  let ret = false;
+          let ret = false;
           for (let i=regex.length; --i>0; )
             {
-	      const part = regex.substring(0,i);
-    	      const [ok,res] = this.getmatch(part, text, flags);
-	      if (ok)
-	        {
-		  t.TR.td(`first ${i} work:`).td(toJ(part));
-		  t.add(res);
-		  regex = regex.substring(i);
-		  ret = true;
-		  break;
-		}
+              const part = regex.substring(0,i);
+              const [ok,res] = this.getmatch(part, text, flags);
+              if (ok)
+                {
+                  t.TR.td(`first ${i} work:`).td(toJ(part));
+                  t.add(res);
+                  regex = regex.substring(i);
+                  ret = true;
+                  break;
+                }
             }
           for (let i=0; ++i<regex.length; )
             {
-	      const part = regex.substring(i);
-    	      const [ok,res] = this.getmatch(part, text, flags)
-	      if (ok)
-	        {
-		  t.TR.td(`last ${regex.length-i} work:`).td(toJ(part));
-		  t.add(res);
-		  regex = regex.substring(0,i);
-		  ret = true;
-		  break;
-		}
+              const part = regex.substring(i);
+              const [ok,res] = this.getmatch(part, text, flags)
+              if (ok)
+                {
+                  t.TR.td(`last ${regex.length-i} work:`).td(toJ(part));
+                  t.add(res);
+                  regex = regex.substring(0,i);
+                  ret = true;
+                  break;
+                }
             }
-	  if (ret)
+          if (ret)
             t.TR.td('remains').td(regex);
-	  return ret;
-    	}
+          return ret;
+}
 
       if (flags.startsWith('a'))
         {
