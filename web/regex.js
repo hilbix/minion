@@ -25,7 +25,6 @@ class Main
         ];
       const evt =
         [ ['click']
-        , ['click']
         , ['change','keyup']
         , ['change']
         , ['change']
@@ -168,7 +167,7 @@ class Main
       rrr.$text = '(full match)';
 
       const	[ok,res,detail] = this.getmatch(regex, text, flags);
-      t.add(ok ? res : detail ? E.TR.td(`${res}`).td(`${detail}`) : (E.TR.TD.text(`${res}`).attr({colspan:2}).$$));
+      t.add(ok ? res ? res :  (E.TR.TD.text(`${detail}`).attr({colspan:2}).$$) : res ? E.TR.td(`${res}`).td(`${detail}`) : (E.TR.TD.text(`${detail}`).attr({colspan:2}).$$));
 
       const part = t.TR.TD.text('(partial match search follows)').attr({colspan:2});
       const search = () =>
@@ -207,9 +206,9 @@ class Main
       }
 
       if (ret === null)
-        return [text === '' ? true : false, 'no match'];
+        return [text === '' ? true : false, null, 'no match'];
       if (ret.length === 0)
-        return [text === '' ? true : false, 'empty match'];
+        return [text === '' ? true : false, null, 'empty match'];
 
       const r = E();
       for (let a=0; a<ret.length; a++)
