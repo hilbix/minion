@@ -1,5 +1,40 @@
 'use strict';
 
+// Encode/Decode RegEx characters functions
+const re_esc = (_ => _())(() =>
+  {
+    const list = [];
+    const ret =
+      { special: '\\\n\r\t\f\v.()[]{}+?*|^$'
+      , escaped: '\\nrtfv'
+      , pairs:   list
+      };
+    for (let i=0; i<ret.special.length; i++)
+      {
+        const	c = ret.special.substr(i,1);
+        let	d = ret.escaped.substr(i,1);
+        if (d === '')
+          ret.escaped += d = c;
+        list.push([c,`\\${d}`]);
+      }
+    // forward
+    ret.encode = s =>
+      {
+        for (let i=0; i<list.length; i++)
+          s = s.replaceAll(list[i][0],list[i][1]);
+        return s;
+      }
+    // backward
+    ret.decode = s =>
+      {
+        for (let i=list.length; --i>=0; )
+          s = s.replaceAll(list[i][1],list[i][0]);
+        return s;
+      }
+    console.log('re_esc', ret);
+    return ret;
+  });
+
 class Main
   {
   constructor()
@@ -32,7 +67,7 @@ class Main
       const all =
         { regex: 1
         , text: 1
-	, match: 0
+        , match: 0
         , a: 2
         , d: 2
         , g: 2
@@ -40,19 +75,21 @@ class Main
         , m: 2
         , s: 2
         , u: 2
-	, full: 3
+        , full: 3
         };
       const call =
         [ _ => { const a=act[_]; if (a) { const e=E('text'); e.$value = a(e.$value); match() }}
-	];
+        ];
       const act =
         { fromJ
-	, toJ
-	, encodeURIComponent
-	, decodeURIComponent
-	, HE
-	, decodeHTML
-	};
+        , toJ
+        , encodeURIComponent
+        , decodeURIComponent
+        , HE
+        , decodeHTML
+        , re_e:re_esc.encode
+        , re_d:re_esc.decode
+        };
 
       // this is too complex.  We need .keep('name', provider, ..) for this, where session is default provider
       const store = () => { for (const e in all) { const g = getter[all[e]](E(e)); if (g !== void 0) sessionStorage.setItem(e, toJ(g)) } };
@@ -73,23 +110,23 @@ class Main
         {
           const e = E(x);
           const n = all[x]|0;
-	  const g = getter[n];
-	  const c = call[n];
+          const g = getter[n];
+          const c = call[n];
           for (const t of evt[n])
             {
               console.log('on', x, t);
               e.on(t, _ =>	// .on('a b') must be made possible in future!
-	        {
-		  if (c)
-		    {
-		      console.log(_);
-		      return c(x);
-		    }
-		  const v=g(e);
-		  if (val[x]!==v)
-		    match();
-		  val[x]=v
-	        });
+                {
+                  if (c)
+                    {
+                      console.log(_);
+                      return c(x);
+                    }
+                  const v=g(e);
+                  if (val[x]!==v)
+                    match();
+                  val[x]=v
+                });
             }
 
           let v = sessionStorage.getItem(x);
@@ -115,16 +152,16 @@ class Main
 
       const positive = () =>
         {
-	  // XXX TODO XXX look for more matches?
+          // XXX TODO XXX look for more matches?
           console.log('positive');
         }
       const negative = () =>
         {
           let ret = false;
-	  // XXX TODO XXX this loop may take too long and make the browser unresponsive
-	  // Options:
-	  // setTimeout here, too
-	  // Worker
+          // XXX TODO XXX this loop may take too long and make the browser unresponsive
+          // Options:
+          // setTimeout here, too
+          // Worker
           for (let i=regex.length; --i>0; )
             {
               const part = regex.substring(0,i);
@@ -179,11 +216,11 @@ class Main
               rrr.$text = `(${++round})`;
               setTimeout(search,100);
             }
-	  else
-	    {
+          else
+            {
               part.$text = '(done)';
               rrr.$text = `(${round} rounds)`;
-	    }
+            }
         }
 
       rrr.$text = '(partial match)';
@@ -232,9 +269,9 @@ class Main
         return s;
       if (s.length>n)
         {
-	  const n2 = (n/2)|0;
-	  return [ s.substr(0,n2), E.BUTTON.text('...'), s.substr(s.length-n2) ];
-	}
+          const n2 = (n/2)|0;
+          return [ s.substr(0,n2), E.BUTTON.text('...'), s.substr(s.length-n2) ];
+        }
       return s;
     }
   };
