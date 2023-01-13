@@ -63,7 +63,7 @@ class Main
     }
   show(w)
     {
-      const copy = (e,_) => copyButton(e,_).SPAN.text(_);
+      const copy = (e,_) => tooLong(copyButton(e,_).SPAN, _);
       const iter = Object.getOwnPropertyNames(w.s).sort();
 
       w.n.$text = `${w.s.length} entries`;
