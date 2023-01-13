@@ -1,6 +1,6 @@
 'use strict';
 
-const TESTED='2022-03-25 Chrome99';
+const TESTED='2022-03-25 Chrome99 2022-19-13 Firefox105';
 
 class Main
   {
@@ -129,25 +129,13 @@ class Main
           localStorage.removeItem(k);
       this.storagevent();
     }
-  td(r,s,max=80)
+  td(r,s,max)
     {
       const e = copyButton(r.TD, s).SPAN;
       if (s === void 0 || s === null)
         s = '';
-      tooLong();
+      tooLong(e, s, max);
       return e;
-      function tooLong()
-        {
-          e.clr()
-           .text(s.substr(0,max-1))
-           .if(s.length>=max, () =>
-               e.A.text('...')
-                .on('click', () =>
-               e.clr()
-                .text(s)
-                .on('click', tooLong)
-          )    );
-        }
     }
   async fn_cache(e)
     {
