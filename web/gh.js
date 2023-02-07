@@ -61,14 +61,17 @@ class Main
       e.A.href('https://github.com/settings/tokens').target().text('GitHub PAT');
       e.text(': ');
       const i = e.INPUT.attr({placeholder:'GitHub PAT', title:'GitHub PAT, no spaces', value:this.token || ''});
-      const b = e.BUTTON.text('store in localStorage').on('click', _ => { localStorage.setItem(this.tok, i.$value); this.expire(); this.run() });
+      e.BUTTON.text('store in localStorage').on('click', _ => { localStorage.setItem(this.tok, i.$value);                this.run() });
+      e.BUTTON.text('.. and clear cache')   .on('click', _ => { localStorage.setItem(this.tok, i.$value); this.expire(); this.run() });
       e.DIV.text("Notes:")
       const x=e.UL;
-      x.LI.text('This tool accesses the GitHub API using ').A.href('https://cdn.skypack.dev/octokit').text('OctoCat').$$.text('.');
-      x.LI.text('It needs ').a('https://github.com/settings/tokens', 'a PAT').text(' to access your repos.  Be sure to limit access rights of that PAT.');
+      x.LI.text('This tool accesses the GitHub API using ').a('https://cdn.skypack.dev/octokit', 'OctoCat');
+      x.LI.text('It needs a PAT to access your repos.  Be sure to limit access rights of that PAT.');
       const y=x.UL;
-      y.LI.text('Fine-grained: "All repositories", "Administration": "').b('Read-only').text('".  Unfortunately this cannot access organization repos?');
-      y.LI.text('Classic: under "repo" tick "').b('public_repo').text('" and under "admin:org" tick "').b('read:org').text('" to access organization repos.  Do not tick "repo" nor "admin:org"!');
+      y.LI.a('https://github.com/settings/tokens/new', 'Classic', '_blank').text(': under "repo" tick "').b('public_repo').text('" and under "admin:org" tick "').b('read:org').text('" to access organization repos.  Do not tick "repo" nor "admin:org"!');
+      y.LI.a('https://github.com/settings/personal-access-tokens/new', 'Fine-grained', '_blank').text(': "All repositories", "Administration": "').b('Read-only').text('".  This can only access the user repos or the repos of one single organization, ')
+          .a('https://github.com/settings/personal-access-tokens/new', 'see under "Resource Owner"', '_blank')
+	  .br.text('(In future it might be possible to add more than one token to access all of your organizations in parallel.)');
       x.LI.text('As GitHub limits the number of requests, the Browser\'s localStorage is used for caching.');
       x.LI.text('The cache is not refreshed automatically.  Clear the cache (with the "clear cache" button) if needed, else you might see stale data.');
       e.DIV.text(`Last tested ${TESTED.split(' ').shift()} with ${TESTED.split(' ').pop()}`);
@@ -79,14 +82,32 @@ class Main
       const e	= this.main.clr().DIV;
       this.s.e	= this.main.hr.DIV;
       this.gh	= new this.octokit({ auth:this.token });
-      this.s.cnt= e.BUTTON.text('clear').on('click', _ => this.expire());
+      this.s.cnt= e.BUTTON.text('clear').on('click', _ => this.clear_cache(this.s.e));
       this.storagevent();
       for (const fn of Object.getOwnPropertyNames(this.__proto__))
         if (fn.startsWith('fn_'))
           e.BUTTON.text(fn.substring(3)).on('click', _ => { this.clr(); this[fn](this.s.e, this.running={}) });
       this.s.i	= e.SPAN;
+      this.s.p	= e.SPAN;
       window.GH = this.gh;
       return 1;
+    }
+  clear_cache(e)
+    {
+      e.clr();
+      let n=0;
+      for (const k of Object.keys(localStorage))
+        if (k.startsWith(this.cache_prefix))
+          n++;
+      if (!n)
+        {
+          e.DIV.text('there are no cached entries');
+          if (localStorage.length) e.DIV.text('The store contains more than just the cache (like the token)');
+          return;
+        }
+      e.DIV.text(`really clear ${n} entries?  This cannot be undone!`);
+      const d = e.DIV;
+      e.BUTTON.text('really clear cache').on('click', () => { this.expire(); this.clear_cache(e) });
     }
   storagevent()
     {
@@ -100,6 +121,10 @@ class Main
   info(s)
     {
       this.s.i.clr().text(s);
+    }
+  progress(s='')
+    {
+      this.s.p.clr().text(s);
     }
   async cache(name, req)
     {
@@ -115,6 +140,7 @@ class Main
       if (!ret) return ret;
       localStorage.setItem(tag, JSON.stringify(ret));
       this.s.i.clr().text('fetched');
+      this.storagevent();
       return ret;
     }
   async get(req)
@@ -123,7 +149,8 @@ class Main
     }
   async paginate(req)
     {
-      return this.cache(`page ${req}`, () => this.gh.paginate(`GET ${req}`));
+      let n=0;
+      return this.cache(`page ${req}`, () => this.gh.paginate(`GET ${req}`, r => { this.progress(` @${++n}`); return r.data }).finally(() => this.progress()));
     }
   expire()
     {
@@ -254,7 +281,7 @@ class Main
 //          e.PRE.text(JSON.stringify(tmp, void 0, 2));
       e.DIV.text("Notes:")
       e.DIV.text("This is a list of all deployment keys you have configured on GitHub.");
-      e.DIV.text('The list is sorted by the name of the keys');
+//      e.DIV.text('The list is sorted by the name of the keys');
       e.DIV.text("Grouped by the name you gave to the deployment key.");
     }
   async fn_stop()
