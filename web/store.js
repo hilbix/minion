@@ -40,7 +40,7 @@ class Main
   buttons(e)
     {
       e.text('width:');
-      for (const w of [20,40,60,80,100,150,200,250,400,500,600,750,999])
+      for (const w of [20,40,60,80,100,125,150,200,250,400,500,600,750,999])
         e.BUTTON.text(w).on('click', _ => { this.set(this.ses,'max',w) && this.show(this.loc) });
     }
   setup(e,s,title)
