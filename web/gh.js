@@ -1,6 +1,7 @@
 'use strict';
 
-const TESTED='2022-03-25 Chrome99 2022-19-13 Firefox105';
+//const TESTED='2022-03-25 Chrome99';
+const TESTED='2023-02-07 Firefox109';
 
 class Main
   {
@@ -64,8 +65,10 @@ class Main
       e.DIV.text("Notes:")
       const x=e.UL;
       x.LI.text('This tool accesses the GitHub API using ').A.href('https://cdn.skypack.dev/octokit').text('OctoCat').$$.text('.');
-      x.LI.text('It needs a PAT to access your repos.  Be sure to limit access rights of that PAT.');
-      x.LI.text('Scope "public_repo" under "repo" is needed to read the keys of your public repos.');
+      x.LI.text('It needs ').a('https://github.com/settings/tokens', 'a PAT').text(' to access your repos.  Be sure to limit access rights of that PAT.');
+      const y=x.UL;
+      y.LI.text('Fine-grained: "All repositories", "Administration": "').b('Read-only').text('".  Unfortunately this cannot access organization repos?');
+      y.LI.text('Classic: under "repo" tick "').b('public_repo').text('" and under "admin:org" tick "').b('read:org').text('" to access organization repos.  Do not tick "repo" nor "admin:org"!');
       x.LI.text('As GitHub limits the number of requests, the Browser\'s localStorage is used for caching.');
       x.LI.text('The cache is not refreshed automatically.  Clear the cache (with the "clear cache" button) if needed, else you might see stale data.');
       e.DIV.text(`Last tested ${TESTED.split(' ').shift()} with ${TESTED.split(' ').pop()}`);
@@ -108,7 +111,7 @@ class Main
           return JSON.parse(was);
         }
       this.info(`${this.nr++} working: ${name}`);
-      const ret = await req().catch(_ => this.info(`request failed: ${_}`));
+      const ret = await req().catch(_ => this.info(`request failed: ${name}: ${_}`));
       if (!ret) return ret;
       localStorage.setItem(tag, JSON.stringify(ret));
       this.s.i.clr().text('fetched');
@@ -191,6 +194,9 @@ class Main
     {
       const repos = await this.paginate('/user/repos');
       const t = e.clr().TABLE;
+      if (!repos)
+        return t.TR.TD.text(`no data due to error reading /user/repos`).br.text('perhaps PAT is missing the needed scope, see "token"');
+
       t.TR
        .TH.text('name').$$
        .TH.text('RW').attr({title:'read-write (x) or read-only (-)'}).$$
@@ -200,6 +206,27 @@ class Main
       if (!repos)
         return t.TR.TD.attr({colspan:5}).text('no data due to error reading /user/repos');
       const a = {};
+      const out = {};
+      const update = g =>
+        {
+//          for (const g of Object.keys(a).sort())
+            {
+              const r = out[g] || (out[g] = t.TR);
+              r.clr();
+              const x = g.split(' ');
+              const f = x.pop();
+              this.td(r, x.join(' ')).$$.addclass('pre');
+              r.TD.text(f[0]=='0' ? '-'  : 'x');
+              r.TD.text(f[1]=='0' ? 'x'  : '-');
+              r.TD.text(f.substr(2)).addclass('pre');
+              const d = r.TD;
+              for (const u of a[g])
+                {
+                  copyButton(d, u.full_name).A.href(`${u.html_url}/settings/keys`).text(u.full_name);
+//                  tmp = u;
+                }
+            }
+        }
       for (const k of repos)
         {
           if (this.running !== running) return t.TR.TD.attr({colspan:5}).text('(stopped)');
@@ -207,33 +234,24 @@ class Main
           const u = k.keys_url.split('{',1)[0];
           const d = await this.paginate(u);
           if (!d)
-            return t.TR.TD.attr({colspan:5}).text(`no data due to error reading ${toJ(u)}`).br.text('perhaps PAT is missing the needed scope, see "token"');
-          for (const m of d)
             {
-              const w = `${m.title} ${m.read_only ? '0' : '1'}${m.verified ? '0' : '1'}${m.key.split(' ',1)[0]}`;
+              const w = `-0-ERROR`;
               const g = a[w] || (a[w]=[]);
               g.push(k);
+              update(w);
+              continue;
+            }
+          for (const m of d)
+            {
+              const w = `${m.title||'?'} ${m.read_only ? '0' : '1'}${m.verified ? '0' : '1'}${m.key.split(' ',1)[0]}`;
+              const g = a[w] || (a[w]=[]);
+              g.push(k);
+              update(w);
 //              t.TR.TD.text(JSON.stringify(m));
             }
         }
 //     let tmp;
-     for (const g of Object.keys(a).sort())
-       {
-          const r = t.TR;
-          const x = g.split(' ');
-          const f = x.pop();
-          this.td(r, x.join(' ')).$$.addclass('pre');
-          r.TD.text(f[0]=='0' ? '-'  : 'x');
-          r.TD.text(f[1]=='0' ? 'x'  : '-');
-          r.TD.text(f.substr(2)).addclass('pre');
-          const d = r.TD;
-          for (const u of a[g])
-            {
-              copyButton(d, u.full_name).A.href(`${u.html_url}/settings/keys`).text(u.full_name);
-//              tmp = u;
-            }
-       }
-//      e.PRE.text(JSON.stringify(tmp, void 0, 2));
+//          e.PRE.text(JSON.stringify(tmp, void 0, 2));
       e.DIV.text("Notes:")
       e.DIV.text("This is a list of all deployment keys you have configured on GitHub.");
       e.DIV.text('The list is sorted by the name of the keys');
