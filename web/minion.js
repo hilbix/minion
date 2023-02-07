@@ -6,7 +6,7 @@
 
 const m = E.DIV;
 E(document.currentScript).after(m);
-m.SPAN.text('[ ').A.href('/').text('Home').$$.text(' ] ');
+m.SPAN.text('[ ').a('/', 'Home').text(' ] ');
 const e = m.SPAN.text('(menu loading)');
 
 async function menu(cache)
