@@ -19,6 +19,7 @@ td:hover		{ border:1px solid red !important }
 .fr			{ float:right }
 .fl			{ float:left }
 .w288			{ width:288px }
+.w100			{ width:100% }
 
 .tiny			{ font-size:x-small }
 .pre			{ white-space:pre }
