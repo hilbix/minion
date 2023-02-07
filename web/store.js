@@ -49,8 +49,8 @@ class Main
       const t = e.TABLE;
       const tr = t.THEAD.TR;
       const b = tr.TD.addclass('pre');
-      const k = tr.TD.INPUT;
-      const v = tr.TD.INPUT;
+      const k = tr.TD.INPUT.addclass('w100');
+      const v = tr.TD.INPUT.addclass('w100');
       const r = {s,t:t.TBODY,n,k,v};
       b.BUTTON.text('-').on('click', _ => { this.del(r); return 1 });
       b.BUTTON.text('+').on('click', _ => { this.set(r, k.$value, v.$value); return 1 });
@@ -87,11 +87,10 @@ class Main
         }
       return w.dirt && this.show(w);
     }
-  edit(w,e)
+  edit(w,k,v)
     {
-      e = e.FIRST.NEXT;
-      w.k.$value = e.FIRST.NEXT.$text;
-      w.v.$value = e.NEXT.FIRST.NEXT.$text;
+      w.k.$value = k;
+      w.v.$value = v;
     }
   show(w)
     {
@@ -105,10 +104,11 @@ class Main
       for (let i=0; i<w.s.length; i++)
         {
           const k = w.s.key(i);
-          const tr = t.TR.onb('click', _ => this.edit(w,tr));
+	  const v = w.s.getItem(k);
+          const tr = t.TR.onb('click', _ => this.edit(w,k,v));
           tr.TD.addclass('pre').CHECKBOX.$$.text(i);
           tooLongCopyTD(tr, k);
-          tooLongCopyTD(tr, w.s.getItem(k));
+          tooLongCopyTD(tr, v);
         }
 
       return wasdirty;
