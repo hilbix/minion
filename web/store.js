@@ -1,5 +1,19 @@
 'use strict';
 
+// XXX TODO XXX
+// - select() (button *)
+// - hiding of unselected
+// - asynchronous stores
+// - get rid of FIRST.NEXT and similar
+// - paging
+// - things like CouchDB
+// - search
+// - sort
+// - prefix
+// - auto-fitting on text entry boxes
+// - Keyboard navigation (cursor keys, enter, etc.)
+// XXX TODO XXX
+
 class Main
   {
   constructor()
@@ -8,6 +22,7 @@ class Main
       const e	= E('main').clr();
       this.err	= e.PRE;
       this.ses	= this.setup(e, window.sessionStorage, 'Session store (per tab)');
+      this.but	= this.buttons(e.DIV);	// actually this.but is undefined
       this.loc	= this.setup(e, window.localStorage,   'Local store (permanent)');
       window.onstorage = _ => this.ev(_);
     }
@@ -22,26 +37,42 @@ class Main
       this.show(this.loc);
       this.show(this.ses);
     }
+  buttons(e)
+    {
+      e.text('width:');
+      for (const w of [20,40,60,80,100,150,200,250,400,500,600,750,999])
+        e.BUTTON.text(w).on('click', _ => { this.set(this.ses,'max',w) && this.show(this.loc) });
+    }
   setup(e,s,title)
     {
       const n = e.DIV.text(title, ': ').SPAN;
       const t = e.TABLE;
       const tr = t.THEAD.TR;
-      const b = tr.TD;
+      const b = tr.TD.addclass('pre');
       const k = tr.TD.INPUT;
       const v = tr.TD.INPUT;
       const r = {s,t:t.TBODY,n,k,v};
       b.BUTTON.text('-').on('click', _ => { this.del(r); return 1 });
-      b.BUTTON.text('+').on('click', _ => { s.setItem(k.$value, v.$value); this.show(r); return 1 });
-      b.BUTTON.text('*').on('click', _ => { this.select(r,k) });
+      b.BUTTON.text('+').on('click', _ => { this.set(r, k.$value, v.$value); return 1 });
+      b.BUTTON.text('?').on('click', _ => { this.select(r,k.$value, v.$value) });
       return r;
     }
-  select(w)
+  set(w,k,v)
+    {
+      const was = w.s.getItem(k);
+      if (was !== v)
+        {
+          w.s.setItem(k,v);
+          w.dirt = 1;
+        }
+      return w.dirt && this.show(w);
+    }
+  select(w,k,v)
     {
       for (let r=w.t.FIRST; r; r=r.NEXT)
         {
           if (r.FIRST.FIRST.$checked) continue;
-
+          // XXX TODO XXX implement
         }
     }
   del(w)
@@ -52,8 +83,9 @@ class Main
           const k = r.FIRST.NEXT.FIRST.NEXT.$text;
           CONSOLE('del', k);
           w.s.removeItem(k);
+          w.dirt = 1;
         }
-      this.show(w);
+      return w.dirt && this.show(w);
     }
   edit(w,e)
     {
@@ -63,8 +95,10 @@ class Main
     }
   show(w)
     {
-      const copy = (e,_) => tooLong(copyButton(e,_).SPAN, _);
       const iter = Object.getOwnPropertyNames(w.s).sort();
+
+      const wasdirty = w.dirt;
+      delete w.dirt;
 
       w.n.$text = `${w.s.length} entries`;
       const t	= w.t.clr();
@@ -72,10 +106,12 @@ class Main
         {
           const k = w.s.key(i);
           const tr = t.TR.onb('click', _ => this.edit(w,tr));
-          tr.TD.CHECKBOX.$$.text(i);
-          tr.TD.run(copy,k);
-          tr.TD.run(copy,w.s.getItem(k));
+          tr.TD.addclass('pre').CHECKBOX.$$.text(i);
+          tooLongCopyTD(tr, k);
+          tooLongCopyTD(tr, w.s.getItem(k));
         }
+
+      return wasdirty;
     }
   };
 
