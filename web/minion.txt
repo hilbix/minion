@@ -5,3 +5,4 @@ sound
 hit
 broadcast
 regex
+cmp
