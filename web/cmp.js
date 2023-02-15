@@ -1,5 +1,5 @@
 'use strict';
-// for a in hello world test foobar; do pango-view --no-display -o "img-$a.png" --font='mono bold 30' <(figlet "$a"); done
+// for a in hello world test foobar; do pango-view --no-display -o "cmp-$a.png" --font='mono bold 30' <(figlet "$a"); done
 
 function draw(canvas, dx,dy, p1x,p1y,p2x,p2y,x,y,r)
 {
@@ -165,7 +165,7 @@ class Main
           p.style({top:0,left:0,position:'absolute',border:'6px solid blue',overflow:'hidden'});
           i.push(p);
 
-          p.src(`img-${n}.png`);
+          p.src(`cmp-${n}.png`);
           p.Loaded();
         }
 
