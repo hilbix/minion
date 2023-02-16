@@ -40,6 +40,7 @@ function mko(ent)
 const ev2o	= mko('type bubbles cancelable composed isTrusted timeStamp');
 const dt2o	= mko('dropEffect effectAllowed files items types');
 const f2o	= mko('lastModified lastModifiedDate name webkitRelativePath size type');
+const e2o	= mko('type name message cause detail');
 
 function dump(...a)
 {
@@ -76,19 +77,22 @@ class Value extends OnOff
       this.e	= [];
     }
   get $()	{ this.v[0] }
-  set $(v)	{ this.set(0,v) }
-  get(n)
+  set $(v)	{ this.SET(0,v) }
+  GET(n)
     {
       if ((n|0) !== n) throw `${n} nonnumeric`;
       if (n<0 || n>=this.v.length) throw `${n} out of bounds`;
       return this.v[n];
     }
-  set(n,v)
+  SET(n,v)
     {
       if ((n|0) !== n) throw `${n} nonnumeric`;
       if (n<0 || n>=this.v.length) throw `${n} out of bounds`;
-      if (this.v[n] === v) return this;
 
+      const old = this.v[n];
+      if (old === v) return old;
+
+      console.log('set', n, old, v);
       this.v[n]	= v;
 
       // update the edits
@@ -102,6 +106,15 @@ class Value extends OnOff
           else
             r.value(v);
         }
+      return old;
+    }
+  Set(n,v)
+    {
+      return this.SET(n,v) !== v;
+    }
+  set(n,v)
+    {
+      this.SET(n,v);
       return this;
     }
   mkref(n,e)
@@ -116,7 +129,7 @@ class Value extends OnOff
       r.push(this.t || this.name);
       this.v.forEach((v,k) => r.push(this.mkref(k, E().INPUT.value(v).on('change', (_,me)=>
         {
-          this.set(k,me.$value);
+          this.SET(k,me.$value);
           this.trigger(me.$value);
         }))));
       return r;
@@ -160,13 +173,14 @@ class Main
       for (const n of 'hello world test foobar'.split(' '))
         {
           const p = d.IMG;
+          const src = `cmp-${n}.png`;
           p.on('load', () => {});
-          p.on('error', () => {});
+          p.on('error', _ => { this.dump(`img error ${src}`, e2o(_)); this.dump('perhaps disable adblocker?'); _.preventDefault() });
           p.style({top:0,left:0,position:'absolute',border:'6px solid blue',overflow:'hidden'});
           i.push(p);
 
-          p.src(`cmp-${n}.png`);
-          p.Loaded();
+          p.src(src);
+//          p.Loaded();
         }
 
       this.handles(d);
@@ -216,8 +230,17 @@ class Main
         {
           const a = (n|0)+1;
           k	=  d.DIV.style({top:0,left:0,width:0,height:0,position:'absolute',cursor:cursors[n]});
-          k.on('mousedown', _ => {act=a; _.preventDefault()});
-          k.on('mouseup',   _ => {act=0});
+//          k.on('mouseup',   _ => {act=void 0});
+          k.on('mousedown', (_,e) =>
+            {
+              _.preventDefault()
+
+              const xy	= e.$XYWH;
+              // remember the relative position of the click
+              // plus the handle which was used
+              act	= { n, x:_.pageX-xy.x, y:_.pageY-xy.y };
+              console.error(act, xy, _.pageX, _.pageY);
+            });
           h[n] = k;
         }
 
@@ -228,37 +251,41 @@ class Main
         {
           if (!act)
             return;
-          if (!_.which)
+          if (!_.buttons)
             {
               act	= 0;
+              console.error('off');
               return;
             }
 
-          const xy = this.d.$XYWH;
-          x	= _.pageX-xy.x;
-          y	= _.pageY-xy.y;
-          if (act != 2)
-            this.hh.set(0, x);
-          if (act != 1)
-            this.hh.set(1, y);
-          this.handle();
           _.preventDefault();
+
+          const xy = this.d.$XYWH;
+
+          const move = {};
+          if (act.n != 1)
+            move.x = _.pageX-xy.x - act.x;
+          if (act.n != 0)
+            move.y = _.pageY-xy.y - act.y;
+          this.handle(move);
         });
     }
-  handle()
+  handle(xy)
     {
-      let x = this.hh.get(0)|0;
-      let y = this.hh.get(1)|0;
-      const w = this.wh.get(0)|0;
-      const h = this.wh.get(1)|0;
-      const hw = this.ww.get(0)|0;	// handle width (x2)
-      const kw = this.ww.get(1)|0;	// knob width (x2)
+      let x = xy && 'x' in xy ? xy.x : this.hh.GET(0)|0;
+      let y = xy && 'y' in xy ? xy.y : this.hh.GET(1)|0;
+      const w = this.wh.GET(0)|0;
+      const h = this.wh.GET(1)|0;
+      const hw = this.ww.GET(0)|0;	// handle width (x2)
+      const kw = this.ww.GET(1)|0;	// knob width (x2)
       if (x<0) x=0;
       if (x>w+hw+hw) x=w+hw+hw;
       if (y<0) y=0;
       if (y>h+hw+hw) y=h+hw+hw;
-      this.hh.set(0,x);
-      this.hh.set(1,y);
+      let alt = 0;
+      alt |= this.hh.Set(0,x);
+      alt |= this.hh.Set(1,y);
+      if (xy && !alt) return;
 
       const k = this.h;
 
@@ -286,15 +313,15 @@ class Main
     }
   dump(x,...y)
     {
-      this.show(E().text(`${++this.ocnt} ${x}: ${dump(...y)}`));
+      this.show(E().text(`${++this.ocnt} ${x}${y.length ? ':' : ''} ${dump(...y)}`));
     }
   canvas(e, c)
     {
     }
   run(...a)
     {
-      this.dump('run', this.wh.get(0), this.wh.get(1), ...a);
-      this.c.attr({width:`${this.wh.get(0)}px`, height:`${this.wh.get(1)}px`});
+      this.dump('run', this.wh.GET(0), this.wh.GET(1), ...a);
+      this.c.attr({width:`${this.wh.GET(0)}px`, height:`${this.wh.GET(1)}px`});
       draw(this.c, 100,100, 100,100, 30,30, 20,20, 10,10);
       this.handle();
     }
