@@ -17,7 +17,7 @@ class Main
   show()
     {
       const e = this.main.clr();
-      e.DIV.text(` (version ${this.v} `).A.href('broadcast.html').target().text('open other window(s) in the same browser to recv/send broadcast');
+      e.DIV.text(` (version ${this.v}) `).A.href('broadcast.html').target().text('open other window(s) in the same browser to recv/send broadcast');
       const m = e.DIV.TEXTAREA.attr({placeholder:'Message',cols:80,rows:10}).onkey('keydown',
         { 'C_Enter C_NumpadEnter':_ => this.send(m.$value) && m.$.select()
         , 'Escape':_ => m.editval('\t')
