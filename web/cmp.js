@@ -151,9 +151,16 @@ class Main
       // Parameter inputs
       const t	= this.t	= e.DIV;
 
-      // Drawing area
-      const d	= this.d	= e.DIV;
+      // flex wrap for drawing area etc.
+      const f	= e.DIV.addclass('flexwrap');
+
+      // Drawing area (flex)
+      const d	= this.d	= f.DIV;
       d.style({position:'relative',overflow:'auto',maxWidth:'99vw',maxHeight:'99vh'});
+
+      // Image area (flex)
+      const i	= this.i	= e.DIV;
+      i.style({position:'relative',overflow:'auto',maxWidth:'99vw',maxHeight:'99vh'});
 
       // Output area
       e.DIV.BUTTON.text('clear').on('click', () => o.clr());
@@ -195,22 +202,53 @@ class Main
       hh.edit(t.TR).on(_ => this.handle());
       ww.edit(t.TR).on(_ => this.handle());
 
-      for (const x of 'drag dragend dragenter dragleave dragover dragstart'.split(' '))
+      //for (const x of 'drag dragend dragenter dragleave dragover dragstart'.split(' '))
+      for (const x of 'dragenter dragleave dragover'.split(' '))
         window.addEventListener
           ( x
-          , ev => { this.dump(x, ev); ev.stopPropagation(); ev.preventDefault(); ev.stopImmediatePropagation() }
+          , ev =>
+            {
+//              this.dump(x, ev);
+              ev.stopPropagation();
+              ev.preventDefault();
+              ev.stopImmediatePropagation();
+            }
           , {capture:true}
           );
-      window.addEventListener('drop', ev =>
+
+      window.addEventListener('drop', _ =>
         {
-          ev.stopPropagation(); ev.preventDefault(); ev.stopImmediatePropagation();
-          this.dump('drop', dt2o(ev.dataTransfer), ev2o(ev));
-          for (const f of ev.dataTransfer.files)
+          _.stopPropagation();
+          _.preventDefault();
+          _.stopImmediatePropagation();
+
+          this.dump('drop', dt2o(_.dataTransfer), ev2o(_));
+          let have;
+          for (const f of _.dataTransfer.files)
             {
               this.dump('file', f2o(f));
-              this.show(E().IMG.src(URL.createObjectURL(f)));
+              have	= this.IMG(URL.createObjectURL(f));
             }
-        });
+          if (!have)
+            for (const t of _.dataTransfer.types)
+              {
+                const d = _.dataTransfer.getData(t);
+                if (t !== 'text/html')
+                  {
+                    this.dump('dropped', t, d);
+                    continue;
+                  }
+                const e = E().DIV.style({color:'red'}).text('HTML: ', d).on('click', () => e.style({color:''}).$.innerHTML = d);
+                this.show(e);
+              }
+        }, {capture:true});
+    }
+  IMG(src)
+    {
+      this.dump('img', src);
+      const i = E().IMG.src(src);
+      this.show(i);
+      return i;
     }
   handles(d)
     {
