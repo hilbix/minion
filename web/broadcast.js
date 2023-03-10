@@ -2,7 +2,7 @@
 
 class Main
   {
-  v='1';
+  v='2';
 
   constructor()
     {
