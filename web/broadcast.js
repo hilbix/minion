@@ -30,7 +30,8 @@ class Main
       const b = x.BUTTON.text('subscribe').on('click', _ => { this.sub(c.$value,_); m.focus() })
       x.text(' | ').BUTTON.text('(clear output below)').on('click', _ => { this.l.clr() })
       e.HR;
-      this.l = e.DIV;
+      this.l = e.DIV.addclass('border');
+      this.i = e.TABLE;
       if (c.$text.trim()=='')
         c.focus();
       else
@@ -59,21 +60,46 @@ class Main
       if (!this.c)
         return this.err('please subscribe to a channel first');
       CONSOLE('send', this.cn, m);
-      this.c.postMessage(m);
-      return this.prep(`sent: ${toJ(m)}`, m);
+      return this.prep(`sent ${toJ(this.cn)}: ${toJ(m)}`, this.c.postMessage(m));
     }
   recv(m)
     {
       CONSOLE('recv', this.cn, m);
-      return this.prep(`recv: ${toJ(m.data)}`, m);
+      const i = {};
+      for (const x of 'data origin lastEventId source ports isTrusted eventPhase target timeStamp type'.split(' '))
+        i[x] = m[x];
+      return this.prep(`recv: ${toJ(m.data)}`, i);
     }
   err(t,m) { return this._prep(t,m,'bgred') }
   prep(t,m) { return this._prep(t,m) }
   _prep(t,m,c)
     {
+      const lock = {};
       const e = E.DIV.text(t).if$(c,E.addclass,c);
       this.l.prep(e);
+      this.info(m);
+      if (m)
+        e.on('mouseover', () => this.info(m, lock)).on('mouseout', () => this.info(void 0, lock));
       return this;
+    }
+  info(m, lock)
+    {
+      if (m === void 0)
+        {
+          if (this._l === lock)
+            this._l = void 0;
+          return this;
+        }
+      if (this._l && !lock)
+         return this;
+      this._l = lock;
+
+      this.i.clr();
+
+      this._info = m;
+      if (m)
+        for (const [k,v] of Object.entries(m))
+          this.i.TR.td(k).td(toJ(v));
     }
   };
 
