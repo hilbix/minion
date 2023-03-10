@@ -102,6 +102,8 @@ button:hover		{ background:#080 }
 				flex-wrap:wrap;
 				}
 
+.border				{ border:1px solid #0ff }
+
 /* hide the radio buttons	*/
 .tabs>input			{ display:none }
 /* instead use the labels	*/
