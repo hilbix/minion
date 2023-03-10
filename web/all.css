@@ -88,6 +88,11 @@ button:hover		{ background:#080 }
 
 
 /*
+ * Flexwrap.  Like <div style="float:left">, but with no need to <br clear>
+ */
+.flexwrap			{ display:flex; flex-wrap:wrap }
+
+/*
 // Minimal responsive easy to use TAB CSS
 // Based on https://codepen.io/mikestreety/pen/yVNNNm
 */
