@@ -149,7 +149,7 @@ class Main
       const e	= this.e	= E('main').clr();
 
       // Parameter inputs
-      const t	= this.t	= e.DIV;
+      const t	= this.t	= e.DIV.TABLE;
 
       // flex wrap for drawing area etc.
       const f	= e.DIV.addclass('flexwrap');
@@ -172,11 +172,10 @@ class Main
       const c	= this.c	= d._MK('CANVAS');
       c.style({backgroundColor:'black',border:'3px solid red',margin:'0px'});
 
-
       // add the 4 images
       // 01
       // 23
-      const i	= this.i	= [];
+      const ii	= this.i	= [];
       for (const n of 'hello world test foobar'.split(' '))
         {
           const p = d.IMG;
@@ -184,7 +183,7 @@ class Main
           p.on('load', () => {});
           p.on('error', _ => { this.dump(`img error ${src}`, e2o(_)); this.dump('perhaps disable adblocker?'); _.preventDefault() });
           p.style({top:0,left:0,position:'absolute',border:'6px solid blue',overflow:'hidden'});
-          i.push(p);
+          ii.push(p);
 
           p.src(src);
 //          p.Loaded();
@@ -194,7 +193,7 @@ class Main
 
 //      const xy	= this.xy	= new Value('xy', 0,0);
       const wh	= this.wh	= new Value('wh', 600,400);
-      const hh	= this.hh	= new Value('hand', 0,0);
+      const hh	= this.hh	= new Value('hand', 300,200);
       const ww	= this.ww	= new Value('size', 3,2);
 
 //      xy.edit(t.TR).on(_ => this.run());
