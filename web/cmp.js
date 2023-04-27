@@ -151,6 +151,16 @@ class Main
       // Parameter inputs
       const t	= this.t	= e.DIV.TABLE;
 
+      // Selection area
+      const s	= e.DIV.TABLE.on('click', _ => this.sel(_));
+      const s1	= s.TR;
+      const q	= this.q = [];
+      q.push(s1.TD.text(1));
+      q.push(s1.TD.text(2));
+      this.s	= s.TR.td(1, 2).TD.attr({rowSpan:2});
+      s.TR.td(3, 4);
+      // TBD
+
       // flex wrap for drawing area etc.
       const f	= e.DIV.addclass('flexwrap');
 
@@ -222,6 +232,7 @@ class Main
           _.stopImmediatePropagation();
 
           this.dump('drop', dt2o(_.dataTransfer), ev2o(_));
+
           let have;
           for (const f of _.dataTransfer.files)
             {
@@ -237,7 +248,7 @@ class Main
                     this.dump('dropped', t, d);
                     continue;
                   }
-                const e = E().DIV.style({color:'red'}).text('HTML: ', d).on('click', () => e.style({color:''}).$.innerHTML = d);
+                const e = E().DIV.addclass('red').text('HTML: ', d).on('click', () => e.rmclass('red').$.innerHTML = d);
                 this.show(e);
               }
         }, {capture:true});
@@ -248,6 +259,14 @@ class Main
       const i = E().IMG.src(src);
       this.show(i);
       return i;
+    }
+  sel($)
+    {
+      if ($.nodeName === 'TD' && ($.innerText|0))
+        {
+	  if (this.q)
+          this.q	= $.innerText|0;
+	}
     }
   handles(d)
     {
