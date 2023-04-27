@@ -69,6 +69,7 @@ a.ext:hover:before, a.ext:hover:after,
 a.ext:focus:before, a.ext:focus:after { display:inherit; color:#fff }
 
 .w98vw			{ width:98vw }
+.red			{ color:red }
 input			{ background:#004; color:white; border:1px solid #880 }
 input:hover		{ background:#008 }
 textarea		{ background:#004; color:white; border:1px solid #880 }
