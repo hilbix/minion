@@ -152,14 +152,12 @@ class Main
       const t	= this.t	= e.DIV.TABLE;
 
       // Selection area
-      const s	= e.DIV.TABLE.on('click', _ => this.sel(_));
-      const s1	= s.TR;
       const q	= this.q = [];
-      q.push(s1.TD.text(1));
-      q.push(s1.TD.text(2));
-      this.s	= s.TR.td(1, 2).TD.attr({rowSpan:2});
-      s.TR.td(3, 4);
-      // TBD
+      const s	= e.DIV.TABLE.style({tableLayout:'fixed',width:'100%'}).on('click', _ => this.sel(_));
+      this.s	= s.TR.TD.text(1).push(q).style({width:'2ex',textAlign:'left',verticalAlign:'top'}).$$.TD.text(2).push(q).style({width:'2ex',textAlign:'right',verticalAlign:'top'}).$$.TD.attr({rowSpan:2}).DIV;
+      s.TR.TD.text(3).push(q).style({width:'2ex',textAlign:'left',verticalAlign:'bottom'}).$$.TD.text(4).push(q).style({width:'2ex',textAlign:'right',verticalAlign:'bottom'});
+
+      this.s.style({whiteSpace:'pre',overflow:'auto'});
 
       // flex wrap for drawing area etc.
       const f	= e.DIV.addclass('flexwrap');
@@ -173,9 +171,14 @@ class Main
       i.style({position:'relative',overflow:'auto',maxWidth:'99vw',maxHeight:'99vh'});
 
       // Output area
-      e.DIV.BUTTON.text('clear').on('click', () => o.clr());
+      const b	= e.DIV;
+      b.BUTTON.text('clear').on('click', () => o.clr());
       const o	= this.o	= e.DIV;
+      o.on('click', _ => this.addimgclicked(_));
       this.ocnt	= 0;
+
+      this.auto	= b.LABEL.CHECKBOX.checked(true);
+      this.auto.$$.text('automatic add image to selector');
 
       // Background drawing canvas
       // (this also fills the DIV as everything else is absolutely positioned)
@@ -193,9 +196,10 @@ class Main
           p.on('load', () => {});
           p.on('error', _ => { this.dump(`img error ${src}`, e2o(_)); this.dump('perhaps disable adblocker?'); _.preventDefault() });
           p.style({top:0,left:0,position:'absolute',border:'6px solid blue',overflow:'hidden'});
+          const q = ii.length;
           ii.push(p);
-
           p.src(src);
+          p.on('click', () => this.selq(q));	// this is wrong.  use the canvas area instead ..  also missing: select the img in selector
 //          p.Loaded();
         }
 
@@ -248,7 +252,17 @@ class Main
                     this.dump('dropped', t, d);
                     continue;
                   }
-                const e = E().DIV.addclass('red').text('HTML: ', d).on('click', () => e.rmclass('red').$.innerHTML = d);
+                const self = this;
+                const e = E().DIV.addclass('red').text('HTML: ', d).on('click', function()
+                  {
+                    e.rmclass('red').$.innerHTML = d;
+                    this.detach();	// remove handler
+
+                    if (self.auto.$checked)
+                      for (const x of e.ALL('img'))
+                        self.addimg(x.src);
+                    return true;	// stop click processing
+                  });
                 this.show(e);
               }
         }, {capture:true});
@@ -258,15 +272,51 @@ class Main
       this.dump('img', src);
       const i = E().IMG.src(src);
       this.show(i);
+      if (this.auto.$checked)
+        this.addimg(src);
       return i;
     }
-  sel($)
+  sel(_)
     {
-      if ($.nodeName === 'TD' && ($.innerText|0))
+      const e = E(_.target);
+      const q = this.q.indexOf(e);
+      if (q>=0)
+        return this.selq(q);
+    }
+  selq(q)
+    {
+      this.q[this.lastq|0].rmclass('red');
+      this.q[this.lastq=q].addclass('red');
+      this.dump(`selected quadrant ${q+1}`);
+    }
+  seli(i)
+    {
+      if (this.lasti)
+        this.lasti.addclass('border1black').rmclass('border1red');
+      this.lasti	= i.addclass('border1red').rmclass('border1black');
+      return i;
+    }
+  addimgclicked(_)
+    {
+      const e = E(_.target);
+      const t = e.$tag;
+      const u = e.$src;
+      this.dump('clicked', t, u);
+      if (t !== 'IMG') return;
+      this.addimg(u);
+    }
+  addimg(u)
+    {
+      for (const x of this.s.CHILDREN)
         {
-	  if (this.q)
-          this.q	= $.innerText|0;
-	}
+          if (x.$src === u)
+            {
+              this.dump('already known, see above', u);
+              this.seli(x).show();
+              return;
+            }
+         }
+      this.seli(this.s.IMG.src(u).style({maxWidth:'100px',maxHeight:'100px'}));
     }
   handles(d)
     {
