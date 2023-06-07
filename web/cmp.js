@@ -1,4 +1,4 @@
-// takes EXAMPLE_IMAGES from example-img.js
+// takes $EXAMPLE_IMAGES from example-img.js
 
 'use strict';
 
@@ -168,7 +168,7 @@ class Main
       d.style({position:'relative',overflow:'auto',maxWidth:'99vw',maxHeight:'99vh'});
 
       // Image area (flex)
-      const i	= this.i	= e.DIV;
+      const i	= e.DIV;
       i.style({position:'relative',overflow:'auto',maxWidth:'99vw',maxHeight:'99vh'});
 
       // Output area
@@ -190,10 +190,11 @@ class Main
       // 01
       // 23
       const ii	= this.i	= [];
-      for (const src of EXAMPLE_IMAGES)
+      for (const src of $EXAMPLE_IMAGES)
         {
           const p = d.IMG;
-          p.on('load', () => { this.addimg(src) });	// only add example image if loaded correctly
+	  const self = this;
+          p.on('load', function() { this.detach(); self.addimg(src) });	// only add example image if loaded correctly
           p.on('error', _ => { this.dump(`img error ${src}`, e2o(_)); this.dump('perhaps disable adblocker?'); _.preventDefault() });
           p.style({top:0,left:0,position:'absolute',border:'6px solid blue',overflow:'hidden'});
           const q = ii.length;
@@ -289,6 +290,7 @@ class Main
         return this.dump('please select quadrant first to select', e.$src);
       this.dump('select for quadrant', n, e.$src);
       this.i[this.lastq].$src	= e.$src;
+      this.seli(e);
       return true;
     }
   selq(q)
