@@ -2,28 +2,10 @@
 
 'use strict';
 
-function draw(canvas, dx,dy, p1x,p1y,p2x,p2y,x,y,r)
+function draw(canvas)
 {
-  canvas.data('dx',dx).data('dy',dy);
-
   const c = canvas.$.getContext('2d');
   c.clearRect(0,0,c.canvas.width,c.canvas.height);
-//  console.log(c.canvas.width, c.canvas.height);
-//  console.log([dx,dy],{p1x,p1y,p2x,p2y,x,y,r,hit});
-
-  c.beginPath();
-  c.lineWidth = 2;
-  c.strokeStyle = 'green';
-  c.moveTo(dx+p1x, dy+p1y);
-  c.lineTo(dx+p2x, dy+p2y);
-  c.stroke();
-  
-  c.beginPath();
-  c.strokeStyle = 'black';
-  c.fillStyle = 'red';
-  c.arc(dx+x, dy+y, r, 0, 2*Math.PI);
-  //c.fill();
-  c.stroke();
 }
 
 function mko(ent)
@@ -155,8 +137,9 @@ class Main
       // Selection area
       const q	= this.q = [];
       const s	= e.DIV.TABLE.style({tableLayout:'fixed',width:'100%'}).on('click', _ => this.sel(_));
-      this.s	= s.TR.TD.text(1).push(q).style({width:'2ex',textAlign:'left',verticalAlign:'top'}).$$.TD.text(2).push(q).style({width:'2ex',textAlign:'right',verticalAlign:'top'}).$$.TD.attr({rowSpan:2}).DIV;
+      this.s	= s.TR.TD.text(1).push(q).style({width:'2ex',textAlign:'left',verticalAlign:'top'}).$$.TD.text(2).push(q).style({width:'2ex',textAlign:'right',verticalAlign:'top'}).$$.TD.attr({rowSpan:3}).DIV;
       s.TR.TD.text(3).push(q).style({width:'2ex',textAlign:'left',verticalAlign:'bottom'}).$$.TD.text(4).push(q).style({width:'2ex',textAlign:'right',verticalAlign:'bottom'});
+      s.TR.TD.attr({colspan:2}).BUTTON.text('clear').on('click', () => { this.selq(-1) });
 
       this.s.style({whiteSpace:'pre',overflow:'auto'});
 
@@ -193,7 +176,7 @@ class Main
       for (const src of $EXAMPLE_IMAGES)
         {
           const p = d.IMG;
-	  const self = this;
+          const self = this;
           p.on('load', function() { this.detach(); self.addimg(src) });	// only add example image if loaded correctly
           p.on('error', _ => { this.dump(`img error ${src}`, e2o(_)); this.dump('perhaps disable adblocker?'); _.preventDefault() });
           p.style({top:0,left:0,position:'absolute',border:'6px solid blue',overflow:'hidden'});
@@ -285,19 +268,27 @@ class Main
       if (q>=0)
         return this.selq(q);
       if (e.$tag !== 'IMG') return;
+      this.seli(e);
       const n = this.lastq !== void 0 ? 1+this.lastq : 0;
       if (this.lastq === void 0)
-        return this.dump('please select quadrant first to select', e.$src);
+        return this.dump('selected', e.$src);
       this.dump('select for quadrant', n, e.$src);
       this.i[this.lastq].$src	= e.$src;
-      this.seli(e);
       return true;
     }
   selq(q)
     {
       this.q[this.lastq|0].rmclass('red');
-      this.q[this.lastq=q].addclass('red');
-      this.dump(`selected quadrant ${q+1}`);
+      if (q>=0)
+        {
+          this.q[this.lastq=q].addclass('red');
+          this.dump(`selected quadrant ${q+1}`);
+        }
+      else
+        {
+          this.lastq = void 0;
+          this.dump(`unselected quadrant`);
+        }
     }
   seli(i)
     {
@@ -438,7 +429,7 @@ class Main
     {
       this.dump('run', this.wh.GET(0), this.wh.GET(1), ...a);
       this.c.attr({width:`${this.wh.GET(0)}px`, height:`${this.wh.GET(1)}px`});
-      draw(this.c, 100,100, 100,100, 30,30, 20,20, 10,10);
+      draw(this.c);
       this.handle();
     }
   };
