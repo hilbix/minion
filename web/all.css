@@ -104,8 +104,12 @@ button:hover		{ background:#080 }
 				}
 
 .border				{ border:1px solid #0ff }
-.border1black			{ border:1px solid #000 }
-.border1red			{ border:1px solid #f00 }
+.imgunselected			{ border:1px solid #000 }
+.imgselected			{
+				border:1px solid #f00;
+				box-shadow: 0 0 0 4px red;
+				z-index:10;
+				}
 
 /* hide the radio buttons	*/
 .tabs>input			{ display:none }

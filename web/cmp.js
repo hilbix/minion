@@ -1,5 +1,6 @@
+// takes EXAMPLE_IMAGES from example-img.js
+
 'use strict';
-// for a in hello world test foobar; do pango-view --no-display -o "cmp-$a.png" --font='mono bold 30' <(figlet "$a"); done
 
 function draw(canvas, dx,dy, p1x,p1y,p2x,p2y,x,y,r)
 {
@@ -189,15 +190,15 @@ class Main
       // 01
       // 23
       const ii	= this.i	= [];
-      for (const n of 'hello world test foobar'.split(' '))
+      for (const src of EXAMPLE_IMAGES)
         {
           const p = d.IMG;
-          const src = `cmp-${n}.png`;
-          p.on('load', () => {});
+          p.on('load', () => { this.addimg(src) });	// only add example image if loaded correctly
           p.on('error', _ => { this.dump(`img error ${src}`, e2o(_)); this.dump('perhaps disable adblocker?'); _.preventDefault() });
           p.style({top:0,left:0,position:'absolute',border:'6px solid blue',overflow:'hidden'});
           const q = ii.length;
-          ii.push(p);
+          if (ii.length < 4)
+            ii.push(p);
           p.src(src);
           p.on('click', () => this.selq(q));	// this is wrong.  use the canvas area instead ..  also missing: select the img in selector
 //          p.Loaded();
@@ -282,6 +283,13 @@ class Main
       const q = this.q.indexOf(e);
       if (q>=0)
         return this.selq(q);
+      if (e.$tag !== 'IMG') return;
+      const n = this.lastq !== void 0 ? 1+this.lastq : 0;
+      if (this.lastq === void 0)
+        return this.dump('please select quadrant first to select', e.$src);
+      this.dump('select for quadrant', n, e.$src);
+      this.i[this.lastq].$src	= e.$src;
+      return true;
     }
   selq(q)
     {
@@ -292,8 +300,8 @@ class Main
   seli(i)
     {
       if (this.lasti)
-        this.lasti.addclass('border1black').rmclass('border1red');
-      this.lasti	= i.addclass('border1red').rmclass('border1black');
+        this.lasti.addclass('imgunselected').rmclass('imgselected');
+      this.lasti	= i.addclass('imgselected').rmclass('imgunselected');
       return i;
     }
   addimgclicked(_)
