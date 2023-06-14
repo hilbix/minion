@@ -1,8 +1,14 @@
 'use strict';
 
 //const TESTED='2022-03-25 Chrome99';
-const TESTED='2023-02-07 Firefox109';
+//const TESTED='2023-02-07 Firefox109';
+const TESTED='2023-06-14 Firefox114 and Octokit v2.0.14';
 
+// Notes:
+// - This caching thingie here is mostly stupid.
+//   Things like that should be handled by some proper Cache class.
+// - The Clipboard thingie should be handled in a class as well.
+// and so on
 class Main
   {
   constructor(cache_prefix)
@@ -22,15 +28,16 @@ class Main
           console.log('CLIP read', _);
         }, _ =>
         {
-          console.log('CLIP read', _);
+          console.log('you can safely ignore this on FF: CLIP read', _);
         });
       navigator.permissions.query({name:'clipboard-write'}).then(_ =>
         {
           console.log('CLIP write', _);
         }, _ =>
         {
-          console.log('CLIP write', _);
+          console.log('you can safely ignore this on FF: CLIP write', _);
         });
+      this.now	= Date.now();
     }
 
 //  load(url)
@@ -46,7 +53,7 @@ class Main
   async run()
     {
       if (!window.octokit)
-        return this.main.text(`Cannot access JavaScript on CDN`);
+        return this.main.text(`Cannot access JavaScript on CDN (Octokit missing)`);
       this.octokit = window.octokit.Octokit;
       this.octoapp = window.octokit.App;
       this.token = await localStorage.getItem(this.tok);
@@ -65,16 +72,16 @@ class Main
       e.BUTTON.text('.. and clear cache')   .on('click', _ => { localStorage.setItem(this.tok, i.$value); this.expire(); this.run() });
       e.DIV.text("Notes:")
       const x=e.UL;
-      x.LI.text('This tool accesses the GitHub API using ').a('https://cdn.skypack.dev/octokit', 'OctoCat');
+      x.LI.text('This tool accesses the GitHub API using ').a('https://cdn.skypack.dev/octokit', 'OctoKit');
       x.LI.text('It needs a PAT to access your repos.  Be sure to limit access rights of that PAT.');
       const y=x.UL;
       y.LI.a('https://github.com/settings/tokens/new', 'Classic', '_blank').text(': under "repo" tick "').b('public_repo').text('" and under "admin:org" tick "').b('read:org').text('" to access organization repos.  Do not tick "repo" nor "admin:org"!');
       y.LI.a('https://github.com/settings/personal-access-tokens/new', 'Fine-grained', '_blank').text(': "All repositories", "Administration": "').b('Read-only').text('".  This can only access the user repos or the repos of one single organization, ')
           .a('https://github.com/settings/personal-access-tokens/new', 'see under "Resource Owner"', '_blank')
-	  .br.text('(In future it might be possible to add more than one token to access all of your organizations in parallel.)');
+          .br.text('(In future it might be possible to add more than one token to access all of your organizations in parallel.)');
       x.LI.text('As GitHub limits the number of requests, the Browser\'s localStorage is used for caching.');
       x.LI.text('The cache is not refreshed automatically.  Clear the cache (with the "clear cache" button) if needed, else you might see stale data.');
-      e.DIV.text(`Last tested ${TESTED.split(' ').shift()} with ${TESTED.split(' ').pop()}`);
+      e.DIV.text(`Last tested ${TESTED.split(' ').shift()} with ${TESTED.split(' ').slice(1).join(' ')}`);
     }
   setup()
     {
@@ -92,9 +99,31 @@ class Main
       window.GH = this.gh;
       return 1;
     }
-  clear_cache(e)
+  async clear_cache(e)
     {
+      const TS = 'refresh timestamp';
       e.clr();
+
+      const r = e.DIV;
+      r.text('Automatically refresh entries:');
+      r.LABEL.text(E.RADIO.attr({name:'r'}).checked(!this.refresh), ' disabled ').on('change', () => this.refresh = 0);
+      r.LABEL.text(E.RADIO.attr({name:'r'}).checked( this.refresh), ' enabled').on('change', () => this.refresh = parseInt(ref.$value));
+      const ref = r.br.text('reference timestamp: ').INPUT.value(this.refresh || await this.cache(TS, () => this.now));
+      r.BR;
+      for (const [a,b] of
+        [ [() => parseInt(ref.$value), 'set reference value']
+        , [() => Date.now(), 'now']
+        , [() => this.now, 'this page was loaded']
+        , [() => this.now - 1000 * 3600, 'a hour ago']
+        , [() => this.now - 1000 * 3600 * 24, 'a day ago']
+        , [() => this.now - 1000 * 3600 * 24 * 7, 'a week ago']
+        , [() => this.now - 1000 * 3600 * 24 * 31, 'a month ago']
+        , [() => this.now - 1000 * 3600 * 24 * 366, 'a year ago']
+        ])
+        r.BUTTON.text(b).on('click', () => { const c = a(); if (!c) return; this.cache_set(TS, ref.$value = c); if (this.refresh) this.refresh=c; });
+
+      e.HR;
+
       let n=0;
       for (const k of Object.keys(localStorage))
         if (k.startsWith(this.cache_prefix))
@@ -105,9 +134,11 @@ class Main
           if (localStorage.length) e.DIV.text('The store contains more than just the cache (like the token)');
           return;
         }
-      e.DIV.text(`really clear ${n} entries?  This cannot be undone!`);
+      e.DIV.text(`Clear all ${n} cache entries?  This cannot be undone!`);
       const d = e.DIV;
       e.BUTTON.text('really clear cache').on('click', () => { this.expire(); this.clear_cache(e) });
+
+      e.HR;
     }
   storagevent()
     {
@@ -126,23 +157,37 @@ class Main
     {
       this.s.p.clr().text(s);
     }
+  async cache_get(name)
+    {
+      const ent = await localStorage.getItem(`${this.cache_prefix}${name}`);
+      if (!ent)
+        return [];
+      const [txt,stamp] = ent.split('\n');
+      return [txt,parseInt(stamp)];
+    }
+  async cache_set(name, data)
+    {
+      data	= await data;
+      if (data !== void 0)
+        {
+           localStorage.setItem(`${this.cache_prefix}${name}`, `${JSON.stringify(data)}\n${Date.now()}`);
+           this.s.i.clr().text('fetched');
+           this.storagevent();
+        }
+      return data;
+    }
   async cache(name, req)
     {
-      const tag = `${this.cache_prefix}${name}`;
-      const was = await localStorage.getItem(tag);
-      if (was)
+      const [was,stamp] = await this.cache_get(name);
+      if (was && (!this.refresh || stamp>=this.refresh))
         {
           this.s.i.clr().text('cached');
           return JSON.parse(was);
         }
       this.info(`${this.nr++} working: ${name}`);
-      const ret = await req().catch(_ => this.info(`request failed: ${name}: ${_}`));
-      if (!ret) return ret;
-      localStorage.setItem(tag, JSON.stringify(ret));
-      this.s.i.clr().text('fetched');
-      this.storagevent();
-      return ret;
+      return this.cache_set(name, P(req).catch(_ => this.info(`request failed: ${name}: ${_}`)));
     }
+
   async get(req)
     {
       return this.cache(`get ${req}`, () => this.gh.request(`GET ${req}`));
@@ -158,6 +203,7 @@ class Main
         if (k.startsWith(this.cache_prefix))
           localStorage.removeItem(k);
       this.storagevent();
+      this.now	= Date.now();
     }
   td(r,s,max)
     {
