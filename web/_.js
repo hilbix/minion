@@ -32,3 +32,4 @@ function tooLongCopyTD(tr,s,max)
   tooLongTD(e,s,max);
 }
 
+//console.log(document.currentScript.src);
