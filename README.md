@@ -24,7 +24,6 @@ However some scripts might use `eval`.  All such scripts are below `eval/`.
 - Usually `eval` is considered evil, however these scripts are done such that it should be safe.
 
 
-
 ## GDPR note
 
 This note is for all the scripts found here (below this folder):
@@ -42,7 +41,13 @@ This note is for all the scripts found here (below this folder):
   - This apparently is a Browser bug.  Please blame the Browser Vendors for this.
   - So if your Browser transmits Cookies, this is solely in your own responsibility.
 
+
 ## FAQ
 
-T.B.D.
+License?
+
+- This Works is placed under the terms of the Copyright Less License,  
+  see file COPYRIGHT.CLL.  USE AT OWN RISK, ABSOLUTELY NO WARRANTY.
+- Read: This is free as free beer, free speech and free baby.
+- Note that submodules can have different licenses!
 
