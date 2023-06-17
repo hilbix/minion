@@ -1,4 +1,5 @@
-// Module Loader with URL fallback support
+// HTML driven module loader with URL fallback support
+// (this currently is a bit chatty on console)
 //
 // This supports dynamic loading of a module
 // with fallback URLs in case the primary URL fails.
@@ -11,14 +12,60 @@
 // <meta data> carries fallback load locations
 //
 // Name the fallbacks data-0 to data-N, where N is the precedence (0 first fallback)
+//
+// - data-as is the name under which the module is registered in loadmodule
+// - all events are dispatched on "document".  (This feature is untested)
+//   - data-load is dispatched when a module starts loading (once per module)
+//   - data-trace is dispatched before the import is tried
+//   - data-ok is dispatched when a module has loaded successfully (once per module)
+//   - data-fail is dispatched when a module loading fails (each failure)
+//   - data-error is dispatched when a module failed to load (once per module)
+//   - data-fin is dispatched when all modules are loaded
+//
 // Notes:
+//
 // - In future, possibly calculated fallback may be implemented (like calling some JS function)
 // - Not all possible errors are detected by nature.
 //
 // Example which works for Octokit, as of 2023-06 the documented URL fails to load:
 //
-//	<meta name="loadmodule.js" content="https://cdn.skypack.dev/octokit" data-0="https://cdn.skypack.dev/octokit@v2.0.14"/>
+//	<meta name="loadmodule.js" data-as="octokit" content="https://cdn.skypack.dev/octokit" data-0="https://cdn.skypack.dev/octokit@v2.0.14"/>
 //	<script type="module" src="loadmodule.js"></script>
+//
+// If you use it programmatically (via import()) it works nearly the same:
+//
+//	<meta name="loadmodule" data-as="OcTo" content="https://cdn.skypack.dev/octokit" data-0="https://cdn.skypack.dev/octokit@v2.0.14"/>
+// with:
+//
+//	import modules from "./loadmodule";
+//	const octokit = await modules.OcTo;
+//
+// or:
+//
+//	const { default:modules } = await import('loadmodule');
+//	const octokit = await modules.OcTo;
+//
+// Additional information:
+//
+//	await modules.$MODULE.module	// the module.  Same as await modules.MODULE
+//	await modules.$MODULE.base	// the main URL
+//	await modules.$MODULE.url	// the URL the module was loaded.  .base is tried first
+//	await modules.$MODULE.error	// the last error.  undefined if successful
+//	await modules.$MODULE.name	// data-as, defaults to .base
+//
+// $MODULE can either be .name or .base
+//
+// For a demo see
+//	https://github.com/hilbix/minion/blob/master/web/gh.html
+//
+// License:
+//
+// This Works is placed under the terms of the Copyright Less License,
+// see file COPYRIGHT.CLL.  USE AT OWN RISK, ABSOLUTELY NO WARRANTY.
+// Read: This code is free as free beer, free speech and free baby.
+// In our Universe, from the data perspective, there is not much of a difference between live code and babies.
+// Copyright on code extends to Copyright on babies.  Please stop abusing babies!
+
 
 // I really have no idea what happens if import.meta isn't supported,
 // as I did not find a way to test that.  Sorry.
@@ -90,10 +137,10 @@ function load(m)
           if (url !== base)
             console.log(me, 'loaded', url, 'instead of', base);
 
-          detail.error	= void 0;
+          delete detail.error;
           detail.module	= module;
           trig('ok');
-          break;
+          return detail;
 
         } catch(_) {
 
@@ -102,6 +149,7 @@ function load(m)
           trig('fail');
 
         }
+      trig('error');
       return detail;
     }
   return mods[base] = mods[name] = run();
