@@ -2,7 +2,7 @@
 
 //const TESTED='2022-03-25 Chrome99';
 //const TESTED='2023-02-07 Firefox109';
-const TESTED='2023-06-14 Firefox114 and Octokit v2.0.14';
+const TESTED='2023-06-16 Firefox114';
 
 // Notes:
 // - This caching thingie here is mostly stupid.
@@ -17,7 +17,6 @@ class Main
       this.err	= E('err');
       this.main	= E('main').clr();
       this.tok	= 'github-token';
-//      this.load('https://cdn.skypack.dev/octokit');
       window.addEventListener('storage', _ => { console.log('STORAGE'); this.storagevent() });
       // WTF why are essential things missing in FF?
       // WTF why aren't they working as advertised?
@@ -40,22 +39,18 @@ class Main
       this.now	= Date.now();
     }
 
-//  load(url)
-//    {
-//      this.main.$text = `loading ${url}`;
-//      fetch(url)
-//      .then(_ => _.text())
-//      .then(_ => { this.main.$text=`loaded ${url}`; return _ })
-//      .then(console.log)
-//      .catch(_ => { this.main.$text=`${url} failed: ${_}`; throw _ })
-//    }
-
   async run()
     {
-      if (!window.octokit)
-        return this.main.text(`Cannot access JavaScript on CDN (Octokit missing)`);
-      this.octokit = window.octokit.Octokit;
-      this.octoapp = window.octokit.App;
+      this.main.text('Loading OctoKit');
+
+      const { default:modules } = await import('./loadmodule');
+
+      this.octourl	= await modules.octokit.url;
+      this.octobase	= await modules.octokit.base;
+      this.octokit	= await modules.octokit;
+      if (!this.octokit)
+        return this.main.$text = `sorry, cannot load OctoKit from CDN ${this.octourl}: ${await modules.octokit.error}`;
+
       this.token = await localStorage.getItem(this.tok);
       if (this.token && this.setup())
         return;
@@ -72,7 +67,7 @@ class Main
       e.BUTTON.text('.. and clear cache')   .on('click', _ => { localStorage.setItem(this.tok, i.$value); this.expire(); this.run() });
       e.DIV.text("Notes:")
       const x=e.UL;
-      x.LI.text('This tool accesses the GitHub API using ').a('https://cdn.skypack.dev/octokit', 'OctoKit');
+      x.LI.text('This tool accesses the GitHub API using ').a(this.octourl, 'OctoKit');
       x.LI.text('It needs a PAT to access your repos.  Be sure to limit access rights of that PAT.');
       const y=x.UL;
       y.LI.a('https://github.com/settings/tokens/new', 'Classic', '_blank').text(': under "repo" tick "').b('public_repo').text('" and under "admin:org" tick "').b('read:org').text('" to access organization repos.  Do not tick "repo" nor "admin:org"!');
@@ -88,7 +83,7 @@ class Main
       this.s	= {}
       const e	= this.main.clr().DIV;
       this.s.e	= this.main.hr.DIV;
-      this.gh	= new this.octokit({ auth:this.token });
+      this.gh	= new this.octokit.Octokit({ auth:this.token });
       this.s.cnt= e.BUTTON.text('clear').on('click', _ => this.clear_cache(this.s.e));
       this.storagevent();
       for (const fn of Object.getOwnPropertyNames(this.__proto__))
@@ -97,11 +92,15 @@ class Main
       this.s.i	= e.SPAN;
       this.s.p	= e.SPAN;
       window.GH = this.gh;
+
+      if (this.octourl !== this.octobase)
+        this.main.hr.text(`OctoKit ${this.octobase} failed to load, loaded ${this.octourl} instead`);
+
       return 1;
     }
   async clear_cache(e)
     {
-      const TS = 'refresh timestamp';
+      const TS = 'RefreshTimestamp';
       e.clr();
 
       const r = e.DIV;
@@ -113,7 +112,7 @@ class Main
       for (const [a,b] of
         [ [() => parseInt(ref.$value), 'set reference value']
         , [() => Date.now(), 'now']
-        , [() => this.now, 'this page was loaded']
+        , [() => this.now, 'this page was loaded / cache cleared']
         , [() => this.now - 1000 * 3600, 'a hour ago']
         , [() => this.now - 1000 * 3600 * 24, 'a day ago']
         , [() => this.now - 1000 * 3600 * 24 * 7, 'a week ago']
@@ -329,6 +328,22 @@ class Main
       e.DIV.text("This is a list of all deployment keys you have configured on GitHub.");
 //      e.DIV.text('The list is sorted by the name of the keys');
       e.DIV.text("Grouped by the name you gave to the deployment key.");
+    }
+  async fn_list(e, running)
+    {
+      const others = await this.cache_get('OtherRepos') || [];
+
+      e.clr().DIV.text("(this part here is not yet ready to be used!)");
+      const s = e.TABLE;
+      for (const r of others)
+        {
+          s.TR.td(E.CHECKBOX).td(r.name);
+        }
+
+      if (!others.length)
+        e.DIV.text('no others are tracked');
+
+      e.text('GitHub user/orga to list: ').INPUT;
     }
   async fn_stop()
     {
