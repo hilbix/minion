@@ -2,7 +2,7 @@
 
 //const TESTED='2022-03-25 Chrome99';
 //const TESTED='2023-02-07 Firefox109';
-const TESTED='2023-06-16 Firefox114';
+const TESTED='2023-06-19 Firefox114';
 
 // Notes:
 // - This caching thingie here is mostly stupid.
