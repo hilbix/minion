@@ -133,7 +133,7 @@ function load(m)
           detail.url	= url;
           trig('trace');
 
-          const module = await import(url);
+          const module = await import(url.split('/',2).length<2 ? `./${url}` : url);
           if (url !== base)
             console.log(me, 'loaded', url, 'instead of', base);
 
