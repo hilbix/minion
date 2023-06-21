@@ -14,7 +14,7 @@ async function menu(cache)
     const _ = await fetch('minion.txt', {cache});
     if (!_.ok) throw `fetch(${cache}) failed: ${_.status} ${_.url}`;
     const menu = await _.text();
-    console.log(menu);
+//    console.log(menu);
     e.clr();
     let f = '[ ';
     for (const m of menu.split('\n'))
