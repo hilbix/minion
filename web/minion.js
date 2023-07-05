@@ -8,6 +8,7 @@ const m = E.DIV;
 E(document.currentScript).after(m);
 m.SPAN.text('[ ').a('/', 'Home').text(' ] ');
 const e = m.SPAN.text('(menu loading)');
+m.text(' ').SPAN.id('menu');
 
 async function menu(cache)
   {
@@ -39,6 +40,6 @@ function err(_)
 menu('force-cache')
 .then(() => menu('no-cache'))
 .catch(err)
-.finally(() => m.text(' ').A.href('https://github.com/hilbix/minion/tree/master/web').text('Source on GitHub'))
+.finally(() => e.text(' ').A.href('https://github.com/hilbix/minion/tree/master/web').text('source'))
 });
 
