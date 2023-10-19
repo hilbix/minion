@@ -6,3 +6,4 @@ hit
 broadcast
 regex
 cmp
+unicode
