@@ -2,7 +2,7 @@
 
 class Main
   {
-  v='2';
+  v='3';
 
   constructor()
     {
@@ -32,7 +32,9 @@ class Main
       e.HR;
       this.l = e.DIV.addclass('border');
       this.i = e.TABLE;
-      if (c.$text.trim()=='')
+      if (c.$value.trim()==='')
+        c.$value	= (window.location.hash||'').substr(1);
+      if (c.$value.trim()==='')
         c.focus();
       else
         {
