@@ -8,7 +8,10 @@ table			{ border-collapse:collapse }
 tr:hover		{ background-color:#044 }
 td			{ vertical-align:top; border:1px dashed blue; padding:1px 3px; }
 
-td:hover		{ border:1px solid red !important }
+.stick			{ position:sticky; top:0 }
+td:hover		{ border:1px solid red }
+td.noborder		{ border:0 }
+td.noborder:hover	{ border:0 }
 
 #err			{ position:fixed; right:0; top:0; background-color:#f00; color:#fff; opacity:0.5 }
 #err:hover		{ opacity:1; transform-origin:top right; transform:scale(5); z-index:999 }
