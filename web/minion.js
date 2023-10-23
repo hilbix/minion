@@ -4,8 +4,16 @@
 
 (_=>_())(()=>{
 
-const m = E.DIV;
-E(document.currentScript).after(m);
+const c = E(document.currentScript);
+console.log(c.PREV.$id);
+if (c.PREV.Dataset('minion')!=='menu')
+  {
+    console.log('here');
+    c.before(E.DIV);
+  }
+const m = c.PREV.clr();
+console.log(m.$);
+
 m.SPAN.text('[ ').a('/', 'Home').text(' ] ');
 const e = m.SPAN.text('(menu loading)');
 m.text(' ').SPAN.id('menu');
