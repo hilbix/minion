@@ -80,6 +80,9 @@ textarea:hover		{ background:#008 }
 button			{ background:#040; color:white; border:2px solid #880 }
 button:hover		{ background:#080 }
 
+.inline-block		{ display:inline-block }
+.inline-block DIV	{ display:inline-block }
+
 /* That's the only way I can see it clearly	*/
 .lab				{ }
 .lab label			{ display:inline-block; background-color:#000; padding:1px 3px; border:2px solid #f0f; border-radius:2px; user-select:none }
