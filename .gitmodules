@@ -1,3 +1,6 @@
 [submodule "js"]
 	path = js
 	url = https://github.com/hilbix/js.git
+[submodule "web/parallax"]
+	path = web/parallax
+	url = https://github.com/WebDevSimplified/css-parallax.git
