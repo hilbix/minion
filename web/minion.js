@@ -7,10 +7,7 @@
 const c = E(document.currentScript);
 console.log(c.PREV.$id);
 if (c.PREV.Dataset('minion')!=='menu')
-  {
-    console.log('here');
-    c.before(E.DIV);
-  }
+  c.before(E.DIV);
 const m = c.PREV.clr();
 console.log(m.$);
 
