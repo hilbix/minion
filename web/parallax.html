@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"/>
+<!-- see https://www.youtube.com/watch?v=mxHoPYFsTuk -->
+<title>Parallax</title>
+<link rel="stylesheet" type="text/css" href="all.css"/>
+<script src="er13.js" data-append="err" data-appendms="20000" data-debug="DEBUG:"></script>
+<script src="es13.js"></script>
+<script src="exampleimg.js"></script>
+</head><body>
+<style>
+/*
+.parallax { position:relative; height:200px }
+.parallax-layer { position:absolute; top:0; right:0; bottom:0; left:0 }
+
+.layer1 { transform:translateZ(0) }
+.layer2 { transform:translateZ(-1px) }
+.layer3 { transform:translateZ(-2px) }
+
+*/
+
+body	{ margin:0 }
+
+.wrapper { perspective:10px; height:100vh; width:100vw; overflow:auto }
+
+.parallax { position:relative; display:flex; justify-content:center; align-items:center; height:100%; transform-style:preserve-3d; z-index:-1 }
+.layer	{ position:absolute; height:100%; width:100%; object-fit:cover; z-index:-1 }
+
+.txt	{ font-size:1rem; padding:2rem; background-color:#333; color:#fff }
+.layert { font-size:2rem; color:white; text-shadow:0 0 5px #f00 }
+.layer1	{ transform:translateZ(-10px) scale(2) }
+.layer2	{ transform:translateZ(-5px) scale(1.5) }
+
+</style>
+<div class="wrapper">
+<div style="transform-style:preserve-3d">
+<div data-minion="menu">please enable JavaScript</div><script src="minion.js"></script>
+<div id="err"></div>
+<div class="txt">
+  <div>&nbsp;</div><div>l</div><div>o</div><div>r</div><div>e</div><div>m</div>
+  <div>&nbsp;</div><div>i</div><div>p</div><div>s</div><div>u</div><div>m</div>
+  <div>&nbsp;</div><div>l</div><div>o</div><div>r</div><div>e</div><div>m</div>
+  <div>&nbsp;</div><div>i</div><div>p</div><div>s</div><div>u</div><div>m</div>
+  <div>&nbsp;</div><div>l</div><div>o</div><div>r</div><div>e</div><div>m</div>
+  <div>&nbsp;</div><div>i</div><div>p</div><div>s</div><div>u</div><div>m</div>
+  <div>&nbsp;</div><div>l</div><div>o</div><div>r</div><div>e</div><div>m</div>
+  <div>&nbsp;</div><div>i</div><div>p</div><div>s</div><div>u</div><div>m</div>
+  <div>&nbsp;</div><div>l</div><div>o</div><div>r</div><div>e</div><div>m</div>
+  <div>&nbsp;</div><div>i</div><div>p</div><div>s</div><div>u</div><div>m</div>
+</div>
+<div class="parallax" style="height:400px">
+  <img class="layer layer1" src="parallax/imgs/Mountain.png"/>
+  <img class="layer layer2" src="parallax/imgs/Trees.png"/>
+  <h1 class="layert">Hello world</h1>
+</div>
+<div class="txt">
+  <div>&nbsp;</div><div>l</div><div>o</div><div>r</div><div>e</div><div>m</div>
+  <div>&nbsp;</div><div>i</div><div>p</div><div>s</div><div>u</div><div>m</div>
+  <div>&nbsp;</div><div>l</div><div>o</div><div>r</div><div>e</div><div>m</div>
+  <div>&nbsp;</div><div>i</div><div>p</div><div>s</div><div>u</div><div>m</div>
+  <div>&nbsp;</div><div>l</div><div>o</div><div>r</div><div>e</div><div>m</div>
+  <div>&nbsp;</div><div>i</div><div>p</div><div>s</div><div>u</div><div>m</div>
+  <div>&nbsp;</div><div>l</div><div>o</div><div>r</div><div>e</div><div>m</div>
+  <div>&nbsp;</div><div>i</div><div>p</div><div>s</div><div>u</div><div>m</div>
+  <div>&nbsp;</div><div>l</div><div>o</div><div>r</div><div>e</div><div>m</div>
+  <div>&nbsp;</div><div>i</div><div>p</div><div>s</div><div>u</div><div>m</div>
+</div>
+<ul><li> Parallax effect with CSS
+</li><li> Scroll different parts of the page with different speed
+</li></ul>
+</div>
+</div>
+</body></html>
