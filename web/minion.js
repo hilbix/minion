@@ -30,7 +30,7 @@ async function mkmenu(e, url, cache, def, path)
     let tickets;
 
     const _ = await fetch(url, {cache});
-    console.log({_});
+//    console.log({_});
     if (!_.ok && !def) throw `fetch(${cache}) failed: ${_.status} ${_.url}`;
     const menu = _.ok ? await _.text() : def;
 //    console.log(menu);
@@ -47,7 +47,7 @@ async function mkmenu(e, url, cache, def, path)
               continue;
             }
 
-          console.log(s0, toJ(s), tickets);
+//          console.log(s0, toJ(s), tickets);
           const tick	= tickets ? s.shift().split(',') : [];
           const u = !s0 || s0.includes('.') ? `${path||''}${s0}` : `${path||''}${s0}.html`;
 
@@ -66,8 +66,6 @@ function err(_)
     console.error('ERR', _);
     e.clr().SPAN.text(`(ERROR #${++errs}) ${_}`).on('click', ()=>menu('reload').catch(err))
   }
-
-console.log('MMMM', c.$);
 
 menu('force-cache')
 .then(() => menu('no-cache'))
