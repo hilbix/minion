@@ -52,10 +52,11 @@ async function mkmenu(e, url, cache, def, path)
           const u = !s0 || s0.includes('.') ? `${path||''}${s0}` : `${path||''}${s0}.html`;
 
           const url = new URL(u, window.location.href);
+          const out = s.length ? s.join(' ') : s0;
           if (window.location.href === url.href)
-            e.text(f, m);
+            e.text(f, out);
           else
-            e.text(f).A.href(u).text(s.length ? s.join(' ') : s0);
+            e.text(f).A.href(u).text(out);
           f = ' | ';
         }
     e.text(' ]');
