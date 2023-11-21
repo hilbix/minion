@@ -19,7 +19,7 @@ const theme = (_,light,dark,custom) =>
     const _url	= () => localStorage.getItem(`${_}_url`);
     const get	= () => { const t = _get(); return [light,dark,custom].includes(t) ? t : system || light }
     const put	= t => localStorage.setItem(_, t === system ? auto : t);
-    const load	= () => { try { return JSON.parse(_data()) } catch (e) { return {} } };
+    const load	= () => { try { return JSON.parse(_data()) } catch (e) { return } };
     const save	= d => localStorage.setItem(`${_}_data`, JSON.stringify(d));
     const store	= url => localStorage.setItem(`${_}_url`, url);
     const setup	= t => { el.checked = t === dark; el.indeterminate = t === custom };
@@ -33,7 +33,7 @@ const theme = (_,light,dark,custom) =>
         put(mode);
       };
     // load custom theme entries
-    const customize = () => { const ds = document.documentElement.style; Object.entries(load()).forEach(([k,v]) => ds.setProperty(k,v)) }
+    const customize = () => { const ds = document.documentElement.style; Object.entries(load()||{}).forEach(([k,v]) => ds.setProperty(k,v)) }
 
     // load custom theme loader via relay
     // this only works after user interaction (clicks)
