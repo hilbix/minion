@@ -60,7 +60,7 @@ class Main
   fn_token(e)
     {
       e.clr();
-      e.A.href('https://github.com/settings/tokens').target().text('GitHub PAT');
+      e.A.href('https://github.com/settings/tokens').attr({rel:'noreferrer noopener'}).target().text('GitHub PAT');
       e.text(': ');
       const i = e.INPUT.attr({placeholder:'GitHub PAT', title:'GitHub PAT, no spaces', value:this.token || ''});
       e.BUTTON.text('store in localStorage').on('click', _ => { localStorage.setItem(this.tok, i.$value);                this.run() });
