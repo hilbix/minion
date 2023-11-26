@@ -204,13 +204,17 @@ class Main
       this.storagevent();
       this.now	= Date.now();
     }
-  td(r,s,max)
+  tooLong(r,s,max)
     {
-      const e = copyButton(r.TD, s).SPAN;
+      const e = copyButton(r, s).SPAN;
       if (s === void 0 || s === null)
         s = '';
       tooLong(e, s, max);
       return e;
+    }
+  td(r,s,max)
+    {
+      return this.tooLong(r.TD, s, max);
     }
   async fn_cache(e)
     {
@@ -299,6 +303,7 @@ class Main
                 }
             }
         }
+      const keys = {}, names = {};
       for (const k of repos)
         {
           if (this.running !== running) return t.TR.TD.attr({colspan:5}).text('(stopped)');
@@ -315,10 +320,16 @@ class Main
             }
           for (const m of d)
             {
-              const w = `${m.title||'?'} ${m.read_only ? '0' : '1'}${m.verified ? '0' : '1'}${m.key.split(' ',1)[0]}`;
+              const t = m.title||'?';
+              const w = `${t} ${m.read_only ? '0' : '1'}${m.verified ? '0' : '1'}${m.key.split(' ',1)[0]}`;
               const g = a[w] || (a[w]=[]);
               g.push(k);
               update(w);
+              // For GH all keys are different, so length should always be === 1
+              const ks = keys[m.key] || (keys[m.key]=[]);
+              if (!ks.includes(t)) ks.push(t);
+              const ns = names[t] || (names[t]=[]);
+              if (!ns.includes(m.key)) ns.push(m.key);
 //              t.TR.TD.text(JSON.stringify(m));
             }
         }
@@ -328,6 +339,19 @@ class Main
       e.DIV.text("This is a list of all deployment keys you have configured on GitHub.");
 //      e.DIV.text('The list is sorted by the name of the keys');
       e.DIV.text("Grouped by the name you gave to the deployment key.");
+      const tab = (title, arr) =>
+        {
+          const t = e.TABLE.TR.th(title).th('entries').$$;
+          for (const k of Object.keys(arr).sort())
+            {
+              const r = t.TR;
+              this.tooLong(r.TD.TT, k);
+              const c = r.TD.TT;
+              arr[k].sort().forEach(_ => this.tooLong(c, _).$$.BR);
+            }
+        }
+      tab('by key' , keys);
+      tab('by name', names);
     }
   async fn_list(e, running)
     {
