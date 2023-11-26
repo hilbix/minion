@@ -2,7 +2,8 @@
 
 //const TESTED='2022-03-25 Chrome99';
 //const TESTED='2023-02-07 Firefox109';
-const TESTED='2023-06-19 Firefox114';
+//const TESTED='2023-06-19 Firefox114';
+const TESTED='2023-11-26 Firefox120 under Linux';
 
 // Notes:
 // - This caching thingie here is mostly stupid.
@@ -49,7 +50,7 @@ class Main
       this.octobase	= await modules.octokit.base;
       this.octokit	= await modules.octokit;
       if (!this.octokit)
-        return this.main.$text = `sorry, cannot load OctoKit from CDN ${this.octourl}: ${await modules.octokit.error}`;
+        return this.main.$text = `Is JavaScript enabled on external sites?  Cannot load OctoKit from CDN ${this.octobase}: ${await modules.octokit.error}`;
 
       this.token = await localStorage.getItem(this.tok);
       if (this.token && this.setup())
@@ -60,22 +61,25 @@ class Main
   fn_token(e)
     {
       e.clr();
-      e.A.href('https://github.com/settings/tokens').attr({rel:'noreferrer noopener'}).target().text('GitHub PAT');
+      e.A.href('https://github.com/settings/tokens').rel().target().text('GitHub PAT');
       e.text(': ');
       const i = e.INPUT.attr({placeholder:'GitHub PAT', title:'GitHub PAT, no spaces', value:this.token || ''});
       e.BUTTON.text('store in localStorage').on('click', _ => { localStorage.setItem(this.tok, i.$value);                this.run() });
       e.BUTTON.text('.. and clear cache')   .on('click', _ => { localStorage.setItem(this.tok, i.$value); this.expire(); this.run() });
       e.DIV.text("Notes:")
       const x=e.UL;
-      x.LI.text('This tool accesses the GitHub API using ').a(this.octourl, 'OctoKit');
-      x.LI.text('It needs a PAT to access your repos.  Be sure to limit access rights of that PAT.');
+      x.LI.text('This tool accesses the GitHub API using ').a(this.octourl, 'OctoKit')
+       .UL.li('As long as my server is not compromized, no data is transmitted to my server.', 'However I do not know what the CDN does to OctoKit.', 'So if somebody cracks into the CDN, all your valuable data may get transmitted to some evil third party.');
+      x.LI.text('This needs a PAT to access your repos.  Be sure to limit access rights of that PAT.');
       const y=x.UL;
-      y.LI.a('https://github.com/settings/tokens/new', 'Classic', '_blank').text(': under "repo" tick "').b('public_repo').text('" and under "admin:org" tick "').b('read:org').text('" to access organization repos.  Do not tick "repo" nor "admin:org"!');
-      y.LI.a('https://github.com/settings/personal-access-tokens/new', 'Fine-grained', '_blank').text(': "All repositories", "Administration": "').b('Read-only').text('".  This can only access the user repos or the repos of one single organization, ')
-          .a('https://github.com/settings/personal-access-tokens/new', 'see under "Resource Owner"', '_blank')
-          .br.text('(In future it might be possible to add more than one token to access all of your organizations in parallel.)');
-      x.LI.text('As GitHub limits the number of requests, the Browser\'s localStorage is used for caching.');
-      x.LI.text('The cache is not refreshed automatically.  Clear the cache (with the "clear cache" button) if needed, else you might see stale data.');
+      y.LI.a('https://github.com/settings/tokens/new', 'Classic', false).text(': under "repo" tick "').b('public_repo').text('" and under "admin:org" tick "').b('read:org').text('" to access organization repos.  Do not tick "repo" nor "admin:org"!')
+           .br.text('(This allows to access all your organizations in parallel with a single token.)');
+      y.LI.a('https://github.com/settings/personal-access-tokens/new', 'Fine-grained', false).text(': "All repositories", "Administration": "').b('Read-only').text('".')
+          .br.text('This can only access the user repos or the repos of one single organization, ')
+          .a('https://github.com/settings/personal-access-tokens/new', 'see under "Resource Owner"', false)
+          .br.text('(In future I might allow more than one token to access all of your organizations in parallel.)');
+      x.LI.text('As GitHub limits the number of requests, your Browser\'s localStorage is used for caching.')
+       .UL.li('The cache is not refreshed automatically.', 'Set the caching time or clear the cache with the "clear cache" button if needed, else you might see stale data.');
       e.DIV.text(`Last tested ${TESTED.split(' ').shift()} with ${TESTED.split(' ').slice(1).join(' ')}`);
     }
   setup()
@@ -341,7 +345,7 @@ class Main
       e.DIV.text("Grouped by the name you gave to the deployment key.");
       const tab = (title, arr) =>
         {
-          const t = e.TABLE.TR.th(title).th('entries').$$;
+          const t = e.TABLE.TR.th(`sorted by ${title}`).th('entries').$$;
           for (const k of Object.keys(arr).sort())
             {
               const r = t.TR;
@@ -350,8 +354,8 @@ class Main
               arr[k].sort().forEach(_ => this.tooLong(c, _).$$.BR);
             }
         }
-      tab('by key' , keys);
-      tab('by name', names);
+      tab('key' , keys);
+      tab('name', names);
     }
   async fn_list(e, running)
     {
