@@ -43,7 +43,7 @@ class Main
       return this.Ping().then(_ => this
         .trg(_)
         .bcout('reg', this._trg.d, this._trg.e)
-        .log('Relaying messages for ', E.A.href(`trg-${this._trg.d}.html`).text(this._trg.d).target(this._trg.d), ' ', this._trg.e)
+        .log('Relaying messages for ', E.A.href(`relay-${this._trg.d}.html`).text(this._trg.d).target(this._trg.d), ' ', this._trg.e)
         );
       return this;
     }
@@ -91,15 +91,19 @@ class Main
         }
       return this.once(`recv ${c}`, 'unknown message from parent', _.data);
     }
-  bcout(c,d,e)
+  bcout(b,c,d,e)
     {
-      this.bc.postMessage({b:this.sec2,c,d,e});
+      this.bc.postMessage({a:this.sec2,b,c,d,e});
       return this;
     }
   bcin(_)
     {
       console.log(_);
-      const {b,c,d,e} = _;
+      const {a,b,c,d,e} = _;
+      switch (c)
+        {
+        case 'who':	return bcout(a, 'me', d, e);
+        }
       if (b !== this.sec2)
         return this.once(`relay ${b}`, 'ignore other relay relay', b);
       switch (c)
