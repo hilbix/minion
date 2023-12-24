@@ -161,3 +161,12 @@ button:hover		{ background:#080 }
     margin-top: 0.2rem;
   }
 }
+
+/* flex-layout
+ *
+ * Sorry, 100vh needs margin:0 as else we do not know the margin
+ */
+
+.flexfullbody0	{ min-height:100vh; margin:0 }
+.flexcol	{ display:flex; flex-direction:column; flex-grow:1 }
+
