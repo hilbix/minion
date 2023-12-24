@@ -6,9 +6,12 @@ const D = (...s) => console.warn(s);
 
 const PREF =
   { dummy:0
-  , grid: 8
-  , gridcolor: [255,255,255,255]
+  , grid: +20
+  , gridcolor: [0,64,255,255]
+  , background: [20,20,20,255]
   };
+
+const RGB = ([r,g,b,a]) => `rgb(${r} ${g} ${b} / ${a})`;
 
 class Dot
   {
@@ -144,15 +147,31 @@ export class Main
 
   init_main(_, b)
     {
-      const c = this.c	= _.clr()._MK('canvas').style({background:'#333'}).addclass('flexcol');
-      c.on('mousemove', _ => { const xy = c.$xy; window.e = _; this.inf(`${_.x-xy[0]} ${_.y-xy[1]}`) });
+      const c = this.c	= window._c_ = _.clr()._MK('canvas').style({background:RGB(PREF.background)}).addclass('flexcol');
+      c.on('mousemove', _ => this.move(_));
       c.on('resize', _ => this.draw());
       window.visualViewport.onresize = () => this.draw();
       this.draw();
 
-      window.c = c;
       console.log('C', c.$);
     }
+   getxy(_)
+     {
+       const [x,y] = this.c.$xy;
+       const g	= PREF.grid;
+       const m	= !g ? 1 : g<0 ? -g : g;
+       const n	= (m/2)|0;
+       const a	= ((_.x - x)/m)|0;
+       const b	= ((_.y - y)/m)|0;
+       return [n+m*a,n+m*b,a,b];
+     }
+   move(_)
+     {
+       window._e_ = _;
+
+       const [x,y,a,b] = this.getxy(_);
+       this.inf(`${x} ${y} (${a} ${b} @ ${PREF.grid})`);
+     }
    async draw_()
      {
        const wh		= this.c.$wh;
@@ -182,11 +201,13 @@ export class Main
        const m = PREF.grid;
        if (m>0)
          {
+           // fast dots
+           const n		= (m/2) | 0;
            const i		= _.getImageData(0,0,w,h);
            const d		= i.data;
            const [r,g,b,a]	= PREF.gridcolor || [0,0,0,255];
-           for (let x = m-1; x < w; x+= m)
-             for (let y = m-1; y < h; y+= m)
+           for (let x = n; x < w; x+= m)
+             for (let y = n; y < h; y+= m)
                {
                  const p = 4 * ( x + y*w );
                  d[p]	= r;
@@ -198,15 +219,16 @@ export class Main
          }
        else if (m<0)
          {
-           const [r,g,b,a]	= PREF.gridcolor || [0,0,0,255];
-           _.strokeStyle = 'rgb(${r} ${g} ${b} / ${a})';
+           // lines
+           const n		= (-m/2) | 0;		// 1=>0 2=>1 3=>1 4=>2 5=>2 usw.
+           _.strokeStyle = RGB(PREF.gridcolor || [0,0,0,255]);
            _.beginPath();
-           for (let x = -m+1; x < w; x-= m)
+           for (let x = n; x < w; x-= m)
              {
                _.moveTo(x,0);
                _.lineTo(x,h);
              }
-           for (let y = -m+1; y < h; y-= m)
+           for (let y = n; y < h; y-= m)
              {
                _.moveTo(0,y);
                _.lineTo(w,y);
