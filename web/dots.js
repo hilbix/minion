@@ -13,14 +13,6 @@ const PREF =
 
 const RGB = ([r,g,b,a]) => `rgb(${r} ${g} ${b} / ${a})`;
 
-class Dot
-  {
-  constructor(_)
-    {
-      this._	= _;
-    }
-  };
-
 const buttons =
   { all: {type:'win', what:'output'}
   , box: {type:'win', what:'palette'}
@@ -34,7 +26,120 @@ class Reg
     #reg = {}
 
     add(name,ob) { this.#reg[name] = new WeakRef(ob) };
-    get find() { return name => this.#reg[name]?.deref() } };
+    get find() { return name => this.#reg[name]?.deref() }
+  };
+
+class Dot
+  {
+  constructor(_)
+    {
+      this._	= _;
+    }
+  };
+
+// Easy and clear option processing
+// new Option('def', opts, def)	if opts is object, remembers opts else sets .def to opts.  alsoe .def set to def if undefined
+// .i('opt', from, to)		.opt set to from if undefined
+// .c('col', defaultcolor)	.col set to defaultcolor if undefined
+class Options
+  {
+  constructor(e,o,def)
+    {
+      this._	= isObject(o) ? Object.assign({}, o) : {[e]:o};
+      if (this._[e] === void 0)
+        this._[e] = def;
+    }
+  i(e,from,to)	// integer value in range from..to inclusive
+    {
+      let v	= this._[e] === void 0 ? from : this._[e]|0;
+      from	= from|0;
+      to	= to|0;
+      if (v<from)
+        v	= from;
+      else if (v>to)
+        v	= to;
+      this._[e] = v;
+      return this;
+    }
+  c(e,color)	// color value ([r,g,b,a] or single integer expanded to gray)
+    {
+      const v = [];
+      const o = mkArr(this._[e]);
+      const d = this._[e]|0;		// default filler is 0 or black or "missing color"
+
+      for (let i = o.length > 4 ? 4 : o.length; --i>=0; )
+        {
+          let c = o[i];
+          if (c === void 0) continue;
+          c = c|0;
+          v[i] = c<0 ? 0 : c>255 ? 255 : c;
+        }
+      while (v.length < 3)
+        v.push(d);
+      if (v.length < 4)
+        v.push(255);
+
+      this._[e]	= v;
+    }
+  };
+
+// Types of cursors:
+//
+//  \ /
+//   X      x: cursor position is at X (this is the default cursor)
+//  / \
+//
+//   _
+//  / \
+// { . }    o: cursor position is middle dot
+//  \_/
+//
+//
+//   |
+//   :      |: cursor position is in middle of :
+//   |
+//
+//
+//   .      .: cursor position is at the dot
+//
+// Thickness:	1 to 3
+// Size:	3 to 6
+// Height:	Width
+// Width:	Thickness + Size + Thickness + Thickness + Thickness + Size + Thickness
+//
+// Cursor is drawn in a color
+// Cursor is surrounded by the inverse color
+// Everything else stays transparent
+class Cursor extends Options
+  {
+  constructor(opt)
+    {
+      super('m', opt, 'x');		// m:mode
+      this.i('s', 3,6);			// s:size
+      this.i('t', 1,3);			// t:thickness
+      this.c('c', [255.255.255.255]);	// c:color
+      this.c('b', [255-this._.c[0], 255-this._.c[1], 255-this._.c[2], 255]);	// b:background-color
+      this.mk();
+    }
+  mk()
+    {
+      const m	= this.c = E.CANVAS;
+      const _	= m.$.getContext('2d');
+      _.clearRect(0,0,w,h);
+      _.strokeStyle = RGB(this.c || [255,255,255,255]);
+      _.beginPath();
+      switch (this._.m)
+        {
+        case 'x':
+        case 'o':
+        case '|':
+        default: 
+
+        }
+      o.c	= m;
+      return o.$;
+    }
+  }
 
 class Button
   {
@@ -147,31 +252,35 @@ export class Main
 
   init_main(_, b)
     {
-      const c = this.c	= window._c_ = _.clr()._MK('canvas').style({background:RGB(PREF.background)}).addclass('flexcol');
+      // Main canvas
+      const c = this.c	= window._c_ = _.clr().CANVAS.style({background:RGB(PREF.background)}).addclass('flexcol', 'hidecursor');
       c.on('mousemove', _ => this.move(_));
       c.on('resize', _ => this.draw());
       window.visualViewport.onresize = () => this.draw();
-      this.draw();
 
+      // Mouse cursor
+      const m = new Cursor('x');
+
+      this.draw();
       console.log('C', c.$);
     }
-   getxy(_)
-     {
-       const [x,y] = this.c.$xy;
-       const g	= PREF.grid;
-       const m	= !g ? 1 : g<0 ? -g : g;
-       const n	= (m/2)|0;
-       const a	= ((_.x - x)/m)|0;
-       const b	= ((_.y - y)/m)|0;
-       return [n+m*a,n+m*b,a,b];
-     }
-   move(_)
-     {
-       window._e_ = _;
+  getxy(_)
+    {
+      const [x,y] = this.c.$xy;
+      const g	= PREF.grid;
+      const m	= !g ? 1 : g<0 ? -g : g;
+      const n	= (m/2)|0;
+      const a	= ((_.x - x)/m)|0;
+      const b	= ((_.y - y)/m)|0;
+      return [n+m*a,n+m*b,a,b];
+    }
+  move(_)
+    {
+      window._e_ = _;
 
-       const [x,y,a,b] = this.getxy(_);
-       this.inf(`${x} ${y} (${a} ${b} @ ${PREF.grid})`);
-     }
+      const [x,y,a,b] = this.getxy(_);
+      this.inf(`${x} ${y} (${a} ${b} @ ${PREF.grid})`);
+    }
    async draw_()
      {
        const wh		= this.c.$wh;
