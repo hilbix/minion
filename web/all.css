@@ -29,6 +29,8 @@ td.noborder:hover	{ border:0 }
 
 .bgred			{ background-color:red }
 
+.hidecursor		{ cursor:none }
+
 /* https://pixelbar.be/blog/css-profi-tip-tooltip-attributen/ */
 a.hint, a.hint:hover, a.hint:focus, a.hint:active, a.hint:visited		{ color:white }
 a.hint,
