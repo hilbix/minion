@@ -1,5 +1,6 @@
 store
 clip
+imgdataurl
 gh
 sound
 hit
