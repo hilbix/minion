@@ -73,7 +73,7 @@ class Main
       const d	= e.DIV;
       d.button('clear', () => { this.t.$value = ''; this._inf.clr() }).attr({disabled:1});
       d.text(' ');
-      d.button('copy text above', () => { copyTextToClip(this.t.$value).then(this.reply.bind(this)) }).attr({disabled:1});
+      d.button('copy image dataURL', () => { copyTextToClip(this.t.$value).then(this.reply.bind(this)) }).attr({disabled:1});
       this.rep = d.TT.style({width:'2ex'});
       d.br.INPUT.attr({type:'file',accept:"image/*"}).on('change', this.file.bind(this));
       e.HR;
