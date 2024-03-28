@@ -9,11 +9,11 @@ console.log(c.PREV.$id);
 if (c.PREV.Dataset('minion')!=='menu')
   c.before(E.DIV);
 const m = c.PREV.clr();
-console.log(m.$);
+//console.log(m.$);
 
 const t = m.SPAN.text('[ ').a('..', 'Back').text(' ] ');
 const e = m.SPAN.text('(menu loading)');
-m.text(' ').SPAN.id('menu');
+const detail = m.text(' ').SPAN.id('menu');
 
 function menu(cache)
   {
@@ -71,6 +71,11 @@ function err(_)
 menu('force-cache')
 .then(() => menu('no-cache'))
 .catch(err)
-.finally(() => c.$.src.includes('minion') && e.text(' ').A.href('https://github.com/hilbix/minion/tree/master/web').text('source'))
+.finally(() =>
+  {
+    c.$.src.includes('minion');
+    e.text(' ').A.href('https://github.com/hilbix/minion/tree/master/web').text('source');
+    window.dispatchEvent(new CustomEvent('minionmenu', { detail }));
+  });
 });
 
