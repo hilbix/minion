@@ -19,13 +19,13 @@ class Main
         str = '';
       switch (item.type)
         {
-	default:
+        default:
           return this.inf('ignored: drop', item.kind, 'of type', item.type, str);
 //	case 'text/uri-list':
 //	case 'text/x-moz-url':
         case 'application/x-moz-file-promise-url':
-	  break;
-	}
+          break;
+        }
       this.inf('trying to download', item.kind, 'of type', item.type, str);
       fetch(str).then(_ => _.blob()).then(_ => this.read(_, str)).catch(_ => this.inf('error fetching', `${str}: ${_}`));
       this.t.$value = str;
@@ -103,10 +103,10 @@ class Main
 
           let have;
           for (const f of _.dataTransfer.files)
-	    {
+            {
               this.drop_file(f);
-	      have = 1;
-	    }
+              have = 1;
+            }
           if (!have)
             for (const i of _.dataTransfer.items)
               this.drop_item(i);
