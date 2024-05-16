@@ -14,11 +14,13 @@ const PREF =
 const RGB = ([r,g,b,a]) => `rgb(${r} ${g} ${b} / ${a})`;
 
 const buttons =
-  { all: {type:'win', what:'output'}
-  , box: {type:'win', what:'palette'}
-  , cmd: {type:'win', what:'command'}
-  , disp: {type:'win', what:'display'}
-  , log: {type:'win', what:'log'}
+  { main:	{type:'win'}
+  , all:	{type:'win'}
+  , box:	{type:'win'}
+  , cmd:	{type:'win'}
+  , disp:	{type:'win'}
+  , log:	{type:'win'}
+  , debug:	{type:'win'}
   };
 
 class Reg
@@ -39,7 +41,7 @@ class Dot
 
 // Easy and clear option processing
 // new Option('def', opts, def)	if opts is object, remembers opts else sets .def to opts.  alsoe .def set to def if undefined
-// .i('opt', from, to)		.opt set to from if undefined
+// .i('opt', FROM, TO)		.opt set to FROM if undefined, else kept in the range of FROM to TO
 // .c('col', defaultcolor)	.col set to defaultcolor if undefined
 class Options
   {
@@ -102,10 +104,14 @@ class Options
 //
 //   .      .: cursor position is at the dot
 //
-// Thickness:	1 to 3
-// Size:	3 to 6
-// Height:	Width
-// Width:	Thickness + Size + Thickness + Thickness + Thickness + Size + Thickness
+// Options:
+// m	Mode		'x' 'o' '|' '.' defaults to 'x' if unknown
+// t	Thickness	1 to 3
+// s	Size		3 to 6
+// w	Width		0 to 1000, 0=Thickness + Size + Thickness + Thickness + Thickness + Size + Thickness
+// h	Height		0 to 1000, 0=Width
+// c	Color		white
+// b	Background	Inverse of Color
 //
 // Cursor is drawn in a color
 // Cursor is surrounded by the inverse color
@@ -117,7 +123,9 @@ class Cursor extends Options
       super('m', opt, 'x');		// m:mode
       this.i('s', 3,6);			// s:size
       this.i('t', 1,3);			// t:thickness
-      this.c('c', [255.255.255.255]);	// c:color
+      this.i('w', 0,100);		// w:width, 0=default
+      this.i('h', 0,100);		// h:height, 0=default
+      this.c('c', [255,255,255,255]);	// c:color
       this.c('b', [255-this._.c[0], 255-this._.c[1], 255-this._.c[2], 255]);	// b:background-color
       this.mk();
     }
@@ -125,19 +133,21 @@ class Cursor extends Options
     {
       const m	= this.c = E.CANVAS;
       const _	= m.$.getContext('2d');
+      const w	= this._.w || 5*this._.t+ 2*this._.s;
+      const h	= this._.h || w;
       _.clearRect(0,0,w,h);
-      _.strokeStyle = RGB(this.c || [255,255,255,255]);
+      _.strokeStyle = RGB(this._.c || [255,255,255,255]);
       _.beginPath();
       switch (this._.m)
         {
-        case 'x':
         case 'o':
         case '|':
-        default: 
-
+        case '.':
+        default:
+          break;
         }
-      o.c	= m;
-      return o.$;
+//      o.c	= m;
+//      return o.$;
     }
   }
 
@@ -156,7 +166,7 @@ class Button
       Button.#reg.add(this.name=k, this);
       this._	= klass;
       this.v	= v;
-      this.w	= v.what;
+      this.w	= v.what || k;
       this.t	= v.type;
       this.msgreset();
 
@@ -202,17 +212,26 @@ export class Main
   msg(data)
     {
       const _	= data.data;
-      console.log('msg', _);
+      if (this.msg_debug)
+        this.msg_debug(_);
+
       if (_.dst !== this.me) return;
 
       let r	= {};
       switch (_.cmd)
         {
-        default:	this.inf(`unknown msg: ${toJ(_)}`); return;
+        default:	return this.inf(`unknown msg: ${toJ(_)}`);
         case 'who':	r	= _.data; break;
         case 'but':	return Button.find(_.but).msg(_);
+        case 'focus':	return this.focus();
         }
       this.send(_.src, r);
+    }
+  focus()
+    {
+      // The problem is, that web site security does no more allow to focus to a window!
+      // This is a PITA, as there should be a way to allow certain windows/URLs to focus themself!
+      window.focus();
     }
   infn(reset)
     {
@@ -246,7 +265,7 @@ export class Main
 
       this.draw=single_run(() => this.draw_().catch(_ => this.inf(`draw failed: ${_}`)));
 
-      this.inf(`DOTS ${this.me}`);
+      this.inf(document.title = `DOTS ${this.me}`);
       this[`init_${this.me}`](_, b);
     }
 
@@ -356,6 +375,13 @@ export class Main
     }
   init_palette()
     {
+    }
+  init_log()
+    {
+    }
+  init_debug(_, b)
+    {
+      console.log({_:_.$,b:b.$});
     }
 
   main()
