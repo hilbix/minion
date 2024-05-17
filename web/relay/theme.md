@@ -48,7 +48,9 @@ In your `.css` files use:
 - `var(--Cabcdef)` instead of `#abcdef` color
 - `var(--CRrGgBbA0)` instead of `rgba(r,g,b,0)` or `rgba(r,g,b,0%)`
 - `var(--CRrGgBbA1)` instead of `rgba(r,g,b,1)` or `rgba(r,g,b,100%)`
-- `var(--CRrGgBbA_a)` instead of `rgba(r,g,b,0.a)`
+- `var(--CRrGgBbA_50)` instead of `rgba(r,g,b,0.50)` (or `50%`)
+- If you need color variants, add a `-variant` at the end of the name
+  - `variant` can be any valid CSS variable name
 
 > Currently a shell based automatic conversion script for this is missing, sorry.
 
