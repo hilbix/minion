@@ -34,8 +34,10 @@ In `theme-light.css`, `theme-dark.css` and `theme-custom.css` define all the var
 
 In `<body>`, probably at the top, add:
 
+```
 <div class="theme bottom0 right0"><label><input id="theme" type="checkbox" checked=""><div></div></label></div>
 <script src="/tino/chrome/site/common/theme.js"></script>
+```
 
 `theme.js` must go after the `DIV` such that it does not need to wait for the DOM to load.
 
