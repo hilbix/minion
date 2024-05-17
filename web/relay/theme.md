@@ -6,9 +6,9 @@ Everything is kept entirely in your local browser.  There are no dynamic pages n
 > The idea behind this is that the user can save the preferred colors
 > and/or automate the color selection or chose another color provider etc.
 
-There is a [quickstart Copy&amp;Paste example](theme-example.html).
+There is a [quickstart Copy&amp;Paste example](https://hilbix.github.io/minion/web/relay/theme-example.html).
 
-Save this somewhere else and try it out.
+You can save this somewhere else and try it out:
 
 - This uses GitHub as CDN which probably is not what you want.
   - Also the URLs might change in future without prior notice.
