@@ -1,8 +1,31 @@
 # `theme.js`
 
-Everything is kept entirely in your local browser.
+Everything is kept entirely in your local browser.  There are no dynamic pages needed.
 
-There are no dynamic pages needed.
+> The relay **does not exist** today and is provided by some external URL.
+> The idea behind this is that the user can save the preferred colors
+> and/or automate the color selection or chose another color provider etc.
+
+There is a [quickstart Copy&amp;Paste example](theme-example.html).
+
+Save this somewhere else and try it out.
+
+- This uses GitHub as CDN which probably is not what you want.
+  - Also the URLs might change in future without prior notice.
+  - So be sure to serve it from a location you are in control!
+- `theme-example.css` uses the colors
+  - Replace this with your "real" CSS file
+- `theme-custom.css` sets the colors, when the selected theme is the Alien
+  - (Double Click the switcher to get the Alien)
+  - This file must contain the default for all colors
+  - In future, the relay will allow the user to change these colors!
+  - It will also allow to download a template of the next two files
+- `theme-light.css` sets the colors, when the selected theme is the Sun
+- `theme-dark.css` sets the colors, when the selected theme is the Moon
+- `theme.css` contains the CSS for the theme switcher itself
+- You do not need separate CSS files
+  - At my side I have a script which generates these files for me
+  - However this is probably completely unusable for others today
 
 
 ## Usage
@@ -10,6 +33,7 @@ There are no dynamic pages needed.
 In `<head>`:
 
 ```html
+<link rel="stylesheet" type="text/css" href="theme-example.css">
 <link rel="stylesheet" type="text/css" href="theme-custom.css">
 <link rel="stylesheet" type="text/css" href="theme-light.css">
 <link rel="stylesheet" type="text/css" href="theme-dark.css">
@@ -48,6 +72,8 @@ which allows to edit all the color variables yourself.
 
 You can use my theme loader (via the [Relay Minion](https://valentin.hilbig.de/minion/relay.html),
 write your own or perhaps use some of somebody else.
+
+> Note that the theme loader is not yet written.
 
 
 ## Notes
@@ -89,4 +115,5 @@ The `relay` then sends a `ping` to `theme.js`
 
 This is answered with a `pong` and the wanted destination.
 
-- The relay sends a `ping`
+T.B.D. (this is future work for now)
+
