@@ -1,4 +1,4 @@
 # Relay Scripts
 
-These are scripts which use [../relay.html](Minion Relay)
+These are scripts which use [Minion Relay](../relay.html)
 
