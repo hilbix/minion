@@ -1,0 +1,71 @@
+body,html		{ background:var(--C000000); color:var(--Cffffff) }
+
+a			{ color:var(--Caaaaff); text-decoration:none }
+a:link, a:visited	{ color:var(--C44ffff); text-decoration:none }
+a:hover			{ color:var(--Cffff00); text-decoration:underline }
+a:active		{ color:var(--Cff8800) }
+
+table			{ border-collapse:collapse }
+tr:hover		{ background-color:var(--C004444) }
+td			{ vertical-align:top; border:1px dashed var(--C0000ff); padding:1px 3px; }
+td:hover		{ border:1px solid var(--Cff0000) }
+td.noborder		{ border:0 }
+td.noborder:hover	{ border:0 }
+
+input			{ background:var(--C000044); color:var(--Cffffff); border:1px solid var(--C888800) }
+input:hover		{ background:var(--C000088) }
+textarea		{ background:var(--C000044); color:var(--Cffffff); border:1px solid var(--C888800) }
+textarea:hover		{ background:var(--C000088) }
+button			{ background:var(--C004400); color:var(--Cffffff); border:2px solid var(--C888800) }
+button:hover		{ background:var(--C008800) }
+
+/* That's the only way I can see it clearly     */
+.lab				{ }
+.lab label			{ display:inline-block; background-color:var(--C000000); padding:1px 3px; border:2px solid var(--Cff00ff); border-radius:2px; user-select:none }
+.lab label:hover		{ background-color:var(--C550000) }
+.lab input			{ display:none; position:absolute; left:0; top:0; width:0; height:0 }
+.lab input:focus + label	{ border-style:dashed }
+.lab input:checked + label	{ background-color:var(--C008800); border-color:var(--Cffff00) }
+.lab input[type="checkbox"]         + label::after	{ content:" \2717 "; color:var(--Cff0000); font-family:monospace; line-height:1 }
+.lab input[type="checkbox"]:checked + label::after	{ content:" \2713 "; color:var(--C8888ff); }
+
+/* <script src="er13.js" data-append="err" data-appendms="20000"></script> */
+#err			{ position:fixed; right:0; top:0; background-color:var(--Cff0000-err); color:var(--Cffffff-err); opacity:0.5 }
+#err:hover		{ opacity:1; transform-origin:top right; transform:scale(2); z-index:999 }
+
+/* https://pixelbar.be/blog/css-profi-tip-tooltip-attributen/ */
+a.hint, a.hint:hover, a.hint:focus, a.hint:active, a.hint:visited	{ color:var(--Cffffff) }
+a.hint, a.ext		{ position:relative }
+a.ext:after		{ content:"External link" }
+a.hint:after		{ content:attr("data-hint") }
+a.hint:after, a.ext:after	{
+			position:absolute;
+			display:none;
+			white-space:nowrap;
+			text-align:center;
+			font-size:x-small;
+			padding:5px 15px;
+			left:calc(50% - 20px);
+			bottom:calc(100% + 20px);
+			background-color:var(--C880000);
+			border:3px solid var(--Cffbb44);
+			border-radius:10px;
+			}
+
+a.hint:before, a.ext:before	{
+			position:absolute;
+			display:none;
+			content:"";
+			width:0;
+			height:0;
+			left:50%;
+			bottom:100%;
+			border-style:solid;
+			border-width:20px 5px 0 5px;
+			border-color:var(--Cffbb44) transparent transparent transparent;
+			}
+a.hint:hover:before, a.hint:hover:after,
+a.hint:focus:before, a.hint:focus:after,
+a.ext:hover:before, a.ext:hover:after,
+a.ext:focus:before, a.ext:focus:after	{ display:inherit; color:var(--Cffffff) }
+
