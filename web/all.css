@@ -24,6 +24,7 @@ td.noborder:hover	{ border:0 }
 .w288			{ width:288px }
 .w100			{ width:100% }
 
+.hide			{ display:none }
 .tiny			{ font-size:x-small }
 .pre			{ white-space:pre }
 
