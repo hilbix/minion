@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"/>
+<title>DEsec.io experiments</title>
+<link rel="stylesheet" type="text/css" href="all.css"/>
+<script src="er13.js" data-append="err"></script>
+<script src="es13.js"></script>
+<meta name="loadmodule" data-as="main" content="desec.js"/>
+<meta name="loadmodule" content="lib/store.js"/>
+<meta name="loadmodule" content="lib/clip.js"/>
+<meta name="loadmodule" content="lib/menu.js"/>
+<meta name="loadmodule" content="lib/auto.js"/>
+</head><body class="flexcol flexfullbody0">
+<script src="minion.js"></script>
+<div id="err"></div>
+<div id="inf"></div>
+<div id="main" class="flexcol">please enable JavaScript</div>
+<ul id="info"><li>This is a little frontend for <a href="https://desec.io">desec.io</a> to manage Tokens and Domains
+  <ul><li> To use it you need to login to <a href="https://desec.io/login">desec.io</a>
+  </li><li> generate a token with <a href="https://desec.io/tokens">https://desec.io/tokens</a> by clicking on the (+)
+  </li><li> optinally allow it to manage tokens
+  </li><li> If you are paranoid, limit it to your IP <a data-click="CopyIP" href="https://valentin.hilbig.de/ip.php" target="your IP">(see it with an external service)</a>
+  </li></ul>
+</li><li> It does not transmit data to a thrird party:
+  <ul><li> All of your valuable data (like the token) is kept in your browser only
+  </li><li> No data is transmitted to the server which serves these pages
+  </li><li> Communication is done with desec.io servers only
+  </li><li> But do not trust me!  Get a good firewall which restricts these pages to desec.io!
+  </li><li> Sadly, I do not know any and I doubt, it can be implemented with Manifest v3 from Google Chrome at all.
+  </li><li> Read: AFAICS <b>Google destroyed all possible network safety with Manifest v3</b>
+  </li><li> Read: Switch to Firefox or (perhaps) other browsers which allow to protect your data.
+  </li><li> BTW I am working on a basic firewall extension for FireFox.
+  </li></ul>
+</li></ul>
+<script type="module" src="loadmain.js"></script>
+</body></html>
