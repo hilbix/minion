@@ -1,30 +1,31 @@
-// Output Minion menu line
+// Output a very simple menu line (behavior changed in 2024-08-23)
+//
+// All the   v----v   below are based on the basename of the script   v----v
+// <div data-minion="menu">please enable JavaScript</div><script src="minion.js"></script>
+// - event 'minionmenu' when the menu is loaded
+// - 'SPAN#minionmenu' for your own menu part
+// ../minion.back.txt: backwards menu contents
+// minion.txt: the menu entries made of lines like:
+//	(empty lines visually separate menu parts, in future overflow menus)
+//	entry
+//	URL	entry
+// URL gets .html appended when no . and does not end in /
 
 'use strict';
 
 (_=>_())(()=>{
 
 const c = E(document.currentScript);
-console.log(c.PREV.$id);
-if (c.PREV.Dataset('minion')!=='menu')
+const p = c.$.src.split('/').pop().split('.').slice(0,-1).join('.');	// ../minion.js => minion
+if (c.PREV.Dataset(p)!=='menu')
   c.before(E.DIV);
-const m = c.PREV.clr();
+const m = c.PREV.clr();	// remove optional please enable JavaScript
 //console.log(m.$);
 
-const t = m.SPAN.text('[ ').a('..', 'Back').text(' ] ');
 const e = m.SPAN.text('(menu loading)');
-const detail = m.text(' ').SPAN.id('menu');
+const detail = m.text(' ').SPAN.id(`${p}menu`);
 
-function menu(cache)
-  {
-    const p = c.$.src.split('.');
-    p.pop();
-    p.push('txt');
-    return Promise.all(
-      [ mkmenu(t, '../back.txt', cache, ' Back', '../')
-      , mkmenu(e, p.join('.'), cache)
-      ]);
-  }
+const menu = cache => mkmenu(e, `${p}.txt`, cache);
 async function mkmenu(e, url, cache, def, path)
   {
     let tickets;
@@ -35,12 +36,19 @@ async function mkmenu(e, url, cache, def, path)
     const menu = _.ok ? await _.text() : def;
 //    console.log(menu);
     e.clr();
-    let f = '[ ';
+    const s = '[ ';
+    const end = () => { if (f !== s) e.text(' ]'); f=s }
+    let f = s;
     for (const m of menu.split('\n'))
       if (m)
         {
           const s = m.split(/\s+/);
           const s0 = s.shift();
+          if (s0 === '#menu')
+            {
+              // TODO: implement parental and submenus
+              continue;
+            }
           if (s0 === '#ticket')
             {
               tickets	= s[0];
@@ -49,17 +57,18 @@ async function mkmenu(e, url, cache, def, path)
 
 //          console.log(s0, toJ(s), tickets);
           const tick	= tickets ? s.shift().split(',') : [];
-          const u = !s0 || s0.includes('.') ? `${path||''}${s0}` : `${path||''}${s0}.html`;
+          // tickets are not completely ready yet and ignored by now
 
-          const url = new URL(u, window.location.href);
-          const out = s.length ? s.join(' ') : s0;
-          if (window.location.href === url.href)
-            e.text(f, out);
-          else
-            e.text(f).A.href(u).text(out);
+          const u = !s0 || s0.includes('.') || s0.endsWith('/') ? `${path||''}${s0}` : `${path||''}${s0}.html`;
+          const url	= new URL(u, window.location.href).href;
+          const isme	= window.location.href === url || window.location.href.split('#')[0] === url;
+
+          e.text(f).if(!isme, _=>_.A.href(u)).text(s.length ? s.join(' ') : s0);
           f = ' | ';
         }
-    e.text(' ]');
+      else
+        end();
+    end();
   }
 let errs=0;
 function err(_)
@@ -75,7 +84,7 @@ menu('force-cache')
   {
     c.$.src.includes('minion');
     e.text(' ').A.href('https://github.com/hilbix/minion/tree/master/web').text('source');
-    window.dispatchEvent(new CustomEvent('minionmenu', { detail }));
+    window.dispatchEvent(new CustomEvent(`${p}menu`, { detail }));
   });
 });
 
