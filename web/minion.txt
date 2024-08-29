@@ -1,10 +1,14 @@
-color
+../	Back
+./	Dir
+
 store
-clip
+color
 gh
-sound
-hit
-broadcast
 regex
 cmp
+broadcast
 unicode
+
+clip
+hit
+sound
