@@ -113,7 +113,7 @@ class Value extends OnOff
       const r = [];
 
       r.push(this.t || this.name);
-      this.v.forEach((v,k) => r.push(this.mkref(k, E().NUMBER.attr({'data-urlstate':`${this.name}${k}`}).value(v).on('input _value', (_,me)=>
+      this.v.forEach((v,k) => r.push(this.mkref(k, E().NUMBER.attr({'data-urlstate':`${this.name}${k}`}).value(v).on('change input _value', (_,me)=>
         {
           this.SET(k,me.$value);
           this.trigger(me.$value);
@@ -202,9 +202,9 @@ class Main
       const ww	= this.ww	= new Value('size', 3,2).numeric();
 
 //      xy.edit(t.TR).on(_ => this.run());
-      wh.edit(t.TR).on(_ => this.run());
-      hh.edit(t.TR).on(_ => this.handle());
-      ww.edit(t.TR).on(_ => this.handle());
+      wh.edit(t.TR).on(_ => { this.run() });
+      hh.edit(t.TR).on(_ => { this.handle() });
+      ww.edit(t.TR).on(_ => { this.handle() });
       UrlState.auto();
 
       //for (const x of 'drag dragend dragenter dragleave dragover dragstart'.split(' '))
