@@ -3,6 +3,7 @@
 
 store
 color
+imgdataurl	data:
 gh
 regex
 cmp
