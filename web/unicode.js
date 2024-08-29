@@ -8,12 +8,12 @@ export class Main
     {
       this.err	= E('err');
       const _	= E('main').clr();
-      this.note	= E('menu');
+      this.note	= E('minionmenu');
       const nav	= E('nav');
       this.tab	= _.DIV;
       this.width= 32;
       for (let i=0; i<=0x10; i++)
-	nav.BUTTON.text(i.toString(16).toUpperCase().padStart(2,'0')).click(_ => this.table(_), i*256);
+        nav.BUTTON.text(i.toString(16).toUpperCase().padStart(2,'0')).click(_ => this.table(_), i*256);
       this.table();
     }
   table(base=0)
