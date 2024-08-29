@@ -1,5 +1,6 @@
 'use strict';
 
+
 class Main
   {
   inf(...a)
@@ -8,6 +9,10 @@ class Main
       if (out === this.last) return;
       this.last	= out;
       this._inf.prep(E.DIV.text(out));
+    }
+  paste_item(item)
+    {
+      return this.readAsArray(item, 'pasted data');
     }
   drop_item(item, ...str)
     {
@@ -19,20 +24,21 @@ class Main
         str = '';
       switch (item.type)
         {
-        default:
-          return this.inf('ignored: drop', item.kind, 'of type', item.type, str);
 //	case 'text/uri-list':
 //	case 'text/x-moz-url':
-        case 'application/x-moz-file-promise-url':
-          break;
-        }
-      this.inf('trying to download', item.kind, 'of type', item.type, str);
-      fetch(str).then(_ => _.blob()).then(_ => this.read(_, str)).catch(_ => this.inf('error fetching', `${str}: ${_}`));
+        case 'application/x-moz-file-promise-url':	return this.download(item.kind, item.type, str);
+	}
+      return this.inf('ignored:', item.kind, 'of type', item.type, str);
+    }
+  download(kind, type, str)
+    {
+      this.inf('trying to download', kind, 'of type', type, str);
       this.t.$value = str;
+      fetch(str).then(_ => _.blob()).then(_ => this.readAsUrl(_, str)).catch(_ => this.inf('error downloading', `${str}: ${_}`));
     }
   drop_file(file)
     {
-      return this.read(file, file.name);
+      return this.readAsUrl(file, file.name);
     }
   file(ev)
     {
@@ -40,17 +46,27 @@ class Main
 
       if (!file)
         return this.inf('no file selected');
-      return this.read(file, file.name);
+      return this.readAsUrl(file, file.name);
     }
-  read(x, name)
+  reader(name)
     {
       const r = new FileReader();
-      this.inf('loading', name);
+
       r.addEventListener('load',  _ => this.loaded(_, r, name));
       r.addEventListener('error', _ => this.inf('error loading',   _.total, 'from', name, 'after', _.loaded));
       r.addEventListener('abort', _ => this.inf('aborted loading', _.total, 'from', name, 'after', _.loaded));
-      r.readAsDataURL(x);
+      return r;
     }
+  readAsUrl(x, name)
+    {
+      this.inf('loading', name);
+      return this.reader(name).readAsDataURL(x);
+    }
+  readAsArray(x, name)
+    {
+      return this.reader(name).readAsArrayBuffer(x);
+    }
+
   loaded(_, r, name)
     {
       const v = r.result;
@@ -58,6 +74,13 @@ class Main
       this._desc.$text = name;
       this._img.src(v);
       this.inf('loaded', _.total, 'from', name);
+    }
+  async paste(_)
+    {
+      this. inf('paste not yet implemented');
+      for (const x of _[0]?.clipboardData?.items)
+        this.paste_item(x);
+      return true;
     }
   reply(c)
     {
@@ -67,8 +90,10 @@ class Main
     }
   constructor()
     {
+      const FOCUS = (e,_) => { _.focus(); window.focus() };
+
       const e	= E('main').clr();
-      this.t	= e.DIV.TEXTAREA.attr({rows:10, readonly:1,placeholder:'base64 encoding shown here'}).style({width:'100%', height:'10em'});
+      this.t	= e.DIV.TEXTAREA.attr({rows:10, readonly:1,placeholder:'base64 encoding shown here'}).style({width:'100%', height:'10em'}).on('mouseenter', FOCUS);
 
       const d	= e.DIV;
       d.button('clear', () => { this.t.$value = ''; this._inf.clr() }).attr({disabled:1});
@@ -76,6 +101,7 @@ class Main
       d.button('copy image dataURL', () => { copyTextToClip(this.t.$value).then(this.reply.bind(this)) }).attr({disabled:1});
       this.rep = d.TT.style({width:'2ex'});
       d.br.INPUT.attr({type:'file',accept:"image/*"}).on('change', this.file.bind(this));
+      d.text(' -- ').INPUT.value('Ctrl+V to paste Image here').on('mouseenter', FOCUS).on('paste', (..._) => this.paste(_));
       e.HR;
       this._inf	= e.DIV;
       e.HR;
