@@ -74,7 +74,7 @@ class Main
       const r = t.TR;
       r.TD.text(n);
       for (const a in o)
-        this.x[a] = r.TD.INPUT.data('v',a).value(o[a]).on('change', _=>this.run());
+        this.x[a] = r.TD.NUMBER.data('v',a).value(o[a]).on('change', _=>this.run());
     }
   run()
     {
