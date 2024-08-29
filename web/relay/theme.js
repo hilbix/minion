@@ -118,9 +118,12 @@ const theme = (_,light,dark,custom) =>
     console.log('theme', mode);
   }
 
-// This is wrong.
+// This currently needs something like following:
 //
-// All parameters should be autodetectable with something like following:
+// <div class="theme bottom0 right0"><label><input id="theme" type="checkbox" checked=""><div></div></label></div>
+// <script src="theme.js"></script>
+//
+// But this is wrong.  All parameters should be autodetectable with something like following:
 //
 // <div id="theme" class="theme bottom0 right0" data-mytheme="light dark custom"></div>
 // <script data-theme="mytheme" src="theme.js"></script>
