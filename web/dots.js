@@ -259,7 +259,7 @@ export class Main
       this.bc.onmessage = _ => this.msg(_);
 
       this.me	= window.location.hash.split('#',2)[1]||'main';
-      const b	= E('menu').SPAN;
+      const b	= E('minionmenu').SPAN;
       this._i	= E('inf');		// info output area
       this._b	= Object.entries(buttons).map(_ => new Button(this, b.BUTTON, _));
 
