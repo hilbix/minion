@@ -12,21 +12,21 @@ GB 		Game Boy[4] 		160 	144	GameBoy
 Palm LoRes 	Palm Low Resolution 	160 	160
 GBA 		Game Boy Advance [6] 	240 	160	GameBoy Advance
 
-					480 	160
+                                        480 	160
 ⅛VGA 		⅛ VGA 			240 	180
 ZXS NDS		ZX Spectrum 		256 	192	ZX Spectrum	Nintendo DS
 CGA 		Color Graphics Adapter 	320 	200
 
 QVGA 		Quarter VGA[3] 		320 	240
-					360 	240
-					384 	240
+                                        360 	240
+                                        384 	240
 
 Palm HiRes 	Palm High Resolution 	320 	320
 
 3DS 		Nintendo 3DS  		400 	240
 WQVGA 		Wide QVGA 		432 	240
 
-		PSION Serie 5 		640 	240
+                PSION Serie 5 		640 	240
 
 PSP 		PlayStation Portable 	480 	272
 
@@ -36,21 +36,21 @@ HVGA 		Half VGA[2] 		480 	320
 HGC 		Hercules G Card 	720 	348
 EGA 		Enhanced G Adapter 	640 	350
 MDA 		Monochrome D Adapter 	720 	350
-					480 	360
+                                        480 	360
 QHD 		Quarter HD 		640 	360
-		Apple Lisa 		720 	364
+                Apple Lisa 		720 	364
 HSVGA 		Half SVGA 		600 	400
 WVGA, WGA 	Wide VGA 		720 	400
 VGA 		Video Graphics Array 	640 	480
-					720 	480
+                                        720 	480
 WVGA, WGA 	Wide VGA 		800 	480
 WVGA, WGA 	Wide VGA 		848 	480
 WVGA, WGA 	Wide VGA 		852 	480
 WVGA, WGA 	Wide VGA 		864 	480
 WVGA, WGA 	Wide VGA 		858 	484
-					720 	540
+                                        720 	540
 qHD, QHD 	Quarter HD 		960 	540
-					960 	540
+                                        960 	540
 PS Vita 	PlayStation Vita 	964 	544
 PAL-D 		PAL Digital[3] 		768 	576
 WXGA 		Wide XGA 		1024 	576
@@ -59,7 +59,7 @@ WSVGA 		Wide SVGA [3] 		1024 	600
 WSVGA 		Wide SVGA 		1072 	600
 HXGA 		Half Megapixel (Apple) 	832 	624
 DVGA 		Double VGA 		960 	640
-					960 	720
+                                        960 	720
 HD720, 720p 	HD ready 		1280 	720
 XGA 		Extended Graphics Array	1024 	768
 WXGA 		Wide XGA (Bright View) 	1280 	768
@@ -75,7 +75,7 @@ WXGA+ 		WXGA Plus[3] 		1400 	900
 WXGA+ 		WXGA Plus 		1440 	900
 WSXGA 		Wide SXGA[3] 		1600 	900
 SXVGA, QVGA 	Super Ext.VGA QuadVGA 	1280 	960
-		(Apple) 		1440 	960
+                (Apple) 		1440 	960
 SXGA 		Super XGA[2][3] 	1280 	1024
 WSXGA 		Wide SXGA[3] 		1600 	1024
 SXGA+ 		SXGA Plus[3] 		1400 	1050
@@ -90,9 +90,9 @@ QWXGA 		Quad WXGA 		2048 	1152
 UXGA 		Ultra XGA[2][3] 	1600 	1200
 WUXGA 		Wide UXGA[3] 		1920 	1200
 DWUXGA 		Double WUXGA 		3840 	1200
-					1920 	1280
+                                        1920 	1280
 TXGA 		Tesselar XGA 		1920 	1400
-					1920 	1440
+                                        1920 	1440
 WQHD, 1440p 	Wide QHD, „2K“ 		2560 	1440
 2K+ 		Quad HD+ 		2880 	1440
 2K+ 		Quad HD+ 		2960 	1440
@@ -111,7 +111,7 @@ QSXGA+ 		Quad SXGA+ 		2800 	2100
 UHD 4K, 2160p 	Ultra HighDef „4K“ 	3840 	2160
 4K-DCI, 4K2K 	4K - High Definition	4096 	2160
 WUHD 		Wide UHD, „5K2K“[3] 	5120 	2160
-		Apple iMac Retina 4K 	4096 	2304
+                Apple iMac Retina 4K 	4096 	2304
 QUXGA 		Quad UXGA[2] 		3200 	2400
 HSVGA 		Hex SVGA 		3200 	2400
 QWUXGA 		Quad WUXGA 		3840 	2400
@@ -119,7 +119,7 @@ WQUXGA 		Wide QUXGA 		3840 	2400
 UHD+ 		Ultra HighDef Plus, 5K 	5120 	2880
 HXGA 		Hex XGA 		4096 	3072
 WHXGA 		Wide HXGA 		5120 	3200
-		Apple Pro Display XDR 	6016 	3384
+                Apple Pro Display XDR 	6016 	3384
 HSXGA 		Hex SXGA 		5120 	4096
 WHSXGA 		Wide HSXGA 		6400 	4096
 FUHD, 4320p 	Full UHD, 8K[3] 	7680 	4320
@@ -246,19 +246,19 @@ export class Main
       const i = this.i = {};
       const t = _.TABLE;
       t.TR.td('width')
-          .TD.INPUT.put(i, 'w').attr({type:'number',size:7}).value(50).$$.$$
+          .TD.NUMBER.put(i, 'w').value(50).$$.$$
           .TD.attr({rowspan:2}).LABEL.CHECKBOX.put(i, 's').$$.text(' sync');
       t.TR.td('height')
-          .TD.INPUT.put(i, 'h').attr({type:'number',size:7}).value(50);
+          .TD.NUMBER.put(i, 'h').value(50);
       t.TR.td('R')
-          .TD.INPUT.put(i, 'r').attr({type:'number',size:7}).value(0).$$.$$
-          .TD.put(i, 'X').attr({rowspan:3}).style({textAlign:'center'}).INPUT.put(i, 'c').attr({type:'color'}).$$
+          .TD.NUMBER.put(i, 'r').value(0).$$.$$
+          .TD.put(i, 'X').attr({rowspan:3}).style({textAlign:'center'}).COLOR.put(i, 'c').$$
              .DIV.style({color:'#fff'}).text('Text ').b('Text').$$
              .DIV.style({color:'#000'}).text('Text ').b('Text');
       t.TR.td('G')
-          .TD.INPUT.put(i, 'g').attr({type:'number',size:7}).value(0);
+          .TD.NUMBER.put(i, 'g').value(0);
       t.TR.td('B')
-          .TD.INPUT.put(i, 'b').attr({type:'number',size:7}).value(0);
+          .TD.NUMBER.put(i, 'b').value(0);
       t.TR.td('download').TD.put(i, 'D').attr({colspan:2});
 
       this.D = _.DIV.text('DEBUG ').SPAN;
@@ -269,7 +269,11 @@ export class Main
     {
       for (const [k,v] of Object.entries(this.i))
         if (k !== k.toUpperCase())
-          v.on('input', () => this.upd(v));
+          {
+            v.on('input', () => this.upd(v));
+            v.urlstate(k);
+          }
+      UrlState.auto();
       return this.upd();
     }
   upd(el)
