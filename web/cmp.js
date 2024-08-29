@@ -78,7 +78,7 @@ class Value extends OnOff
       const old = this.v[n];
       if (old === v) return old;
 
-      console.log('set', n, old, v);
+      //console.log('set', n, old, v);
       this.v[n]	= v;
 
       // update the edits
