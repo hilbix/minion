@@ -58,7 +58,9 @@ class Value extends OnOff
       this.name	= name;
       this.v	= v;
       this.e	= [];
+      this._num	= false;
     }
+  numeric(b=true) { this._num = !!b; return this }
   get $()	{ this.v[0] }
   set $(v)	{ this.SET(0,v) }
   GET(n)
@@ -72,6 +74,7 @@ class Value extends OnOff
       if ((n|0) !== n) throw `${n} nonnumeric`;
       if (n<0 || n>=this.v.length) throw `${n} out of bounds`;
 
+      if (this._num) v = v|0;
       const old = this.v[n];
       if (old === v) return old;
 
@@ -86,7 +89,7 @@ class Value extends OnOff
           const r = e[i].deref();
           if (!r)
             e.splice(i,1);
-          else
+          else if (r.$value !== `${v}`)
             r.value(v);
         }
       return old;
@@ -110,7 +113,7 @@ class Value extends OnOff
       const r = [];
 
       r.push(this.t || this.name);
-      this.v.forEach((v,k) => r.push(this.mkref(k, E().INPUT.value(v).on('change', (_,me)=>
+      this.v.forEach((v,k) => r.push(this.mkref(k, E().NUMBER.attr({'data-urlstate':`${this.name}${k}`}).value(v).on('input _value', (_,me)=>
         {
           this.SET(k,me.$value);
           this.trigger(me.$value);
@@ -128,6 +131,9 @@ class Main
   {
   constructor()
     {
+      this.handle	= once_per_frame(() => this._handle());
+      this.run		= once_per_frame(() => this._run());
+
       const x	= this.x	= {};
       const e	= this.e	= E('main').clr();
 
@@ -190,15 +196,16 @@ class Main
 
       this.handles(d);
 
-//      const xy	= this.xy	= new Value('xy', 0,0);
-      const wh	= this.wh	= new Value('wh', 600,400);
-      const hh	= this.hh	= new Value('hand', 300,200);
-      const ww	= this.ww	= new Value('size', 3,2);
+//      const xy	= this.xy	= new Value('xy', 0,0).numeric();
+      const wh	= this.wh	= new Value('wh', 600,400).numeric();
+      const hh	= this.hh	= new Value('hand', 300,200).numeric();
+      const ww	= this.ww	= new Value('size', 3,2).numeric();
 
 //      xy.edit(t.TR).on(_ => this.run());
       wh.edit(t.TR).on(_ => this.run());
       hh.edit(t.TR).on(_ => this.handle());
       ww.edit(t.TR).on(_ => this.handle());
+      UrlState.auto();
 
       //for (const x of 'drag dragend dragenter dragleave dragover dragstart'.split(' '))
       for (const x of 'dragenter dragleave dragover'.split(' '))
@@ -374,10 +381,10 @@ class Main
             move.x = _.pageX-xy.x - act.x;
           if (act.n != 0)
             move.y = _.pageY-xy.y - act.y;
-          this.handle(move);
+          this._handle(move);
         });
     }
-  handle(xy)
+  _handle(xy)
     {
       let x = xy && 'x' in xy ? xy.x : this.hh.GET(0)|0;
       let y = xy && 'y' in xy ? xy.y : this.hh.GET(1)|0;
@@ -425,12 +432,12 @@ class Main
   canvas(e, c)
     {
     }
-  run(...a)
+  _run(...a)
     {
       this.dump('run', this.wh.GET(0), this.wh.GET(1), ...a);
       this.c.attr({width:`${this.wh.GET(0)}px`, height:`${this.wh.GET(1)}px`});
       draw(this.c);
-      this.handle();
+      this._handle();
     }
   };
 
