@@ -4,7 +4,7 @@ const uni = _ => _.toString(16).toUpperCase().padStart(6,'0');
 
 export class Main
   {
-  main()
+  async main()
     {
       this.err	= E('err');
       const _	= E('main').clr();
@@ -25,7 +25,7 @@ export class Main
       this.base	= base;
       this.n	= 0;
 //      E(document).on('scroll', () => this.scroll());
-      this.show();
+      this.show(this._sema = {});
     }
   scroll()
     {
@@ -37,10 +37,15 @@ export class Main
       } catch (e) {}
       return false;
     }
-
-  show()
+  stop()
     {
-      this._next = void 0;
+      this._sema	= void 0;
+    }
+
+  show(sema)
+    {
+      if (sema !== this._sema) return;
+
       const t = this.tab.hr.TABLE;
       const m = 256 / this.width;
       let s, S;
@@ -75,7 +80,7 @@ export class Main
       if (this.n<256)
         {
           this.note.$text = this.base;
-          this._next = setTimeout(() => this.show(), 1);
+          requestIdleCallback(() => setTimeout(() => this.show(sema), 100));
         }
       else
         this.note.clr();
