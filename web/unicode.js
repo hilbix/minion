@@ -80,7 +80,7 @@ export class Main
       if (this.n<256)
         {
           this.note.$text = this.base;
-          requestIdleCallback(() => setTimeout(() => this.show(sema), 100));
+          requestIdleCallback(() => setTimeout(() => this.show(sema), 250));
         }
       else
         this.note.clr();
