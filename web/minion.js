@@ -25,17 +25,17 @@ const m = c.PREV.clr();	// remove optional please enable JavaScript
 const e = m.SPAN.text('(menu loading)');
 const detail = m.text(' ').SPAN.id(`${p}menu`);
 
-const menu = cache => mkmenu(e, `${p}.txt`, cache);
-async function mkmenu(e, url, cache, def, path)
+const menu = cache => mkmenu(`${p}.txt`, cache).then(_ => e.clr().add(_));
+async function mkmenu(url, cache, path)
   {
+    const e = E();
     let tickets;
 
     const _ = await fetch(url, {cache});
 //    console.log({_});
-    if (!_.ok && !def) throw `fetch(${cache}) failed: ${_.status} ${_.url}`;
-    const menu = _.ok ? await _.text() : def;
+    if (!_.ok) throw `fetch(${cache}) failed: ${_.status} ${_.url}`;
+    const menu = await _.text();
 //    console.log(menu);
-    e.clr();
     const s = '[ ';
     const end = () => { if (f !== s) e.text(' ]'); f=s }
     let f = s;
@@ -46,7 +46,11 @@ async function mkmenu(e, url, cache, def, path)
           const s0 = s.shift();
           if (s0 === '#menu')
             {
-              // TODO: implement parental and submenus
+              try {
+                await mkmenu(s[0], cache, s[1]).then(_ => e.add(_));
+              } catch (e) {
+                console.error(e,m);
+              }
               continue;
             }
           if (s0 === '#ticket')
@@ -59,7 +63,7 @@ async function mkmenu(e, url, cache, def, path)
           const tick	= tickets ? s.shift().split(',') : [];
           // tickets are not completely ready yet and ignored by now
 
-          const u = !s0 || s0.includes('.') || s0.endsWith('/') ? `${path||''}${s0}` : `${path||''}${s0}.html`;
+          const u = !s0 || s0.split('/').pop().includes('.') || s0.endsWith('/') ? `${path||''}${s0}` : `${path||''}${s0}.html`;
           const url	= new URL(u, window.location.href).href;
           const isme	= window.location.href === url || window.location.href.split('#')[0] === url;
 
@@ -69,6 +73,7 @@ async function mkmenu(e, url, cache, def, path)
       else
         end();
     end();
+    return e;
   }
 let errs=0;
 function err(_)
@@ -80,11 +85,6 @@ function err(_)
 menu('force-cache')
 .then(() => menu('no-cache'))
 .catch(err)
-.finally(() =>
-  {
-    c.$.src.includes('minion');
-    e.text(' ').A.href('https://github.com/hilbix/minion/tree/master/web').text('source');
-    window.dispatchEvent(new CustomEvent(`${p}menu`, { detail }));
-  });
+.finally(() => window.dispatchEvent(new CustomEvent(`${p}menu`, { detail })));
 });
 
