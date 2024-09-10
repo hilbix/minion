@@ -101,7 +101,7 @@ class Main
       d.button('copy image dataURL', () => { copyTextToClip(this.t.$value).then(this.reply.bind(this)) }).attr({disabled:1});
       this.rep = d.TT.style({width:'2ex'});
       d.br.INPUT.attr({type:'file',accept:"image/*"}).on('change', this.file.bind(this));
-      d.text(' -- ').INPUT.value('Ctrl+V to paste Image here').on('mouseenter', FOCUS).on('paste', (..._) => this.paste(_));
+      d.text(' -- ').INPUT.value('!!DOES-NOT-WORK!! Ctrl+V to paste Image here').on('mouseenter', FOCUS).on('paste', (..._) => this.paste(_));
       e.HR;
       this._inf	= e.DIV;
       e.HR;
