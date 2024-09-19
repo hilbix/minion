@@ -26,8 +26,7 @@ class Field extends Radios
       super(f, 'mode');
       this.f	= f;
 //      f.LABEL.title(t).checkbox(t, ()=>{}).text('Function');
-      this.v	= _.DIV.TEXTAREA.attr({cols:80,rows:5});
-      this.v.$.placeholder = 'text/string or body of: async function (_) { body; }';
+      this.v	= _.DIV.TEXTAREA.attr({cols:80,rows:5}).placeholder('text/string or body of: async function (_) { body; }');
     }
   get form() { return this.f }
   get text() { return this.v }
@@ -65,11 +64,11 @@ export class Main extends Radios
       _.DIV.text('NOT READY YET');
       _.DIV.text('NOT READY YET');
       _.DIV.text('NOT READY YET');
-      const tag	= 'cry_';
-      const tln	= tag.length;
+
       const f	= _.FORM;
       f.text(' Algorithm:');
       super(f, 'cry');
+
       _.HR;
       this.inp	= new Field(_, 'Input');
       this.key	= new Field(_, 'Key');
