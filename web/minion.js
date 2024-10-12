@@ -23,7 +23,7 @@ const m = c.PREV.clr();	// remove optional please enable JavaScript
 //console.log(m.$);
 
 const e = m.SPAN.text('(menu loading)');
-const detail = m.text(' ').SPAN.id(`${p}menu`);
+const detail = m.text(' ').SPAN.id(`${p}menu`).text(document.title);
 
 const menu = cache => mkmenu(`${p}.txt`, cache).then(_ => e.clr().add(_));
 async function mkmenu(url, cache, path)
