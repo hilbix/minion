@@ -15,5 +15,5 @@ clip
 hit
 sound
 
-https://github.com/hilbix/minion/tree/master/web source
+https://github.com/hilbix/minion/tree/master/web/ source
 
