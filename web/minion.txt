@@ -7,6 +7,7 @@ imgdataurl	data:
 gh
 regex
 cmp
+keys
 broadcast
 unicode
 
