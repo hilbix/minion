@@ -60,7 +60,7 @@ export class Main
   constructor(_)
     {
       _.clr();
-      this.div	= _.DIV.button('clear output', _ => this.clr()).button('COPY', _ => this.copy());
+      this.div	= _.DIV.button('clear output', _ => this.clr()).button('COPY', _ => this.copy()).LABEL.text(' disable events: ').checkbox(true, 'test', _ => this.block = _);
       this.out	= _.DIV;
     }
   async main(modules)
@@ -98,13 +98,14 @@ export class Main
     }
   ev(t,_)
     {
-//      _.preventDefault();
-
       const now	= Date.now();
       const s	= now - (this.now ?? now);
       this.now	= now;
       this.add([t,s>1 ? s : 1, Object.fromEntries(Object.keys(PROPS).map(k => [k,_[k]]))]);
       sessionStorage.setItem(document.title, toJ(this.list));
+
+      if (this.block)
+        _.preventDefault();
     }
   add(x)
     {
